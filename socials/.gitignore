@@ -1,0 +1,37 @@
+
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.tmp
+*.tmp_proj
+*.opendb
+*.VC.db
+*.vs
+
+.idea/
+*.idea
+
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+*.nuget
+packages/
+obj/
+bin/
+
+*.log
+*.db
+*.mdf
+*.ldf
+
+*.env  # Если используете файл .env для секретов
+appsettings.Development.json # или любые другие файлы с конфиденциальными данными
+appsettings.Production.json
+
+Thumbs.db
+
+*.bak
+*.old
+
+*.pdb 
