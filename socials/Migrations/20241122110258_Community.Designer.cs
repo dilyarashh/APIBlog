@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using socials.DBContext;
@@ -11,9 +12,11 @@ using socials.DBContext;
 namespace socials.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241122110258_Community")]
+    partial class Community
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,35 +65,6 @@ namespace socials.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Communities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
-                            CreateTime = new DateTime(2024, 11, 22, 11, 50, 41, 788, DateTimeKind.Utc).AddTicks(6080),
-                            Description = "Публикуем мемы с котами!",
-                            IsClosed = false,
-                            Name = "Котята",
-                            SubscribersCount = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("f0e9d8c7-b6a5-4321-9876-543210fedcba"),
-                            CreateTime = new DateTime(2024, 11, 22, 11, 50, 41, 788, DateTimeKind.Utc).AddTicks(6080),
-                            Description = "Одобряем заявку только избранным",
-                            IsClosed = true,
-                            Name = "Секретное сообщество",
-                            SubscribersCount = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("f0e6d8c9-b6a5-4321-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 22, 11, 50, 41, 788, DateTimeKind.Utc).AddTicks(6080),
-                            Description = "Делимся мнением о прочитанных книгах",
-                            IsClosed = false,
-                            Name = "Книжный клуб",
-                            SubscribersCount = 0
-                        });
                 });
 
             modelBuilder.Entity("socials.DBContext.Models.CommunityUser", b =>
@@ -109,26 +83,6 @@ namespace socials.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CommunityUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            CommunityId = new Guid("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
-                            UserId = new Guid("64a8ff7a-537f-48f7-8351-f7cdefa89ff0"),
-                            Role = 0
-                        },
-                        new
-                        {
-                            CommunityId = new Guid("f0e6d8c9-b6a5-4321-9876-543110fedcba"),
-                            UserId = new Guid("2b4d3b8b-f3ae-4b9a-9456-cec31003f7fa"),
-                            Role = 0
-                        },
-                        new
-                        {
-                            CommunityId = new Guid("f0e9d8c7-b6a5-4321-9876-543210fedcba"),
-                            UserId = new Guid("1a85e616-8ff4-4a27-8859-14b444939b6c"),
-                            Role = 0
-                        });
                 });
 
             modelBuilder.Entity("socials.DBContext.Models.Tag", b =>
