@@ -37,6 +37,51 @@ namespace socials.Migrations
                     b.ToTable("BlackTokens");
                 });
 
+            modelBuilder.Entity("socials.DBContext.Models.Community", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SubscribersCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Communities");
+                });
+
+            modelBuilder.Entity("socials.DBContext.Models.CommunityUser", b =>
+                {
+                    b.Property<Guid>("CommunityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CommunityId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CommunityUsers");
+                });
+
             modelBuilder.Entity("socials.DBContext.Models.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -181,6 +226,35 @@ namespace socials.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("socials.DBContext.Models.CommunityUser", b =>
+                {
+                    b.HasOne("socials.DBContext.Models.Community", "Community")
+                        .WithMany("Users")
+                        .HasForeignKey("CommunityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("socials.DBContext.Models.User", "User")
+                        .WithMany("Communities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Community");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("socials.DBContext.Models.Community", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("socials.DBContext.Models.User", b =>
+                {
+                    b.Navigation("Communities");
                 });
 #pragma warning restore 612, 618
         }

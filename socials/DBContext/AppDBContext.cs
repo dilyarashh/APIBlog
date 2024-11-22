@@ -8,8 +8,11 @@ public class AppDBContext : DbContext
     public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
     public DbSet<User> Users { get; set; }
     public DbSet<BlackToken> BlackTokens { get; set; }
-    
     public DbSet<Tag> Tags { get; set; }
+    
+    public DbSet<Community> Communities { get; set; }
+    
+    public DbSet<CommunityUser> CommunityUsers { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +35,8 @@ public class AppDBContext : DbContext
                 new Tag { Id = Guid.Parse("9ea305d2-b1f8-405e-a91f-08dbffad6d0e"), Name = "Работа", CreateTime = DateTime.SpecifyKind(DateTime.Parse("2024-11-18T14:40:53.0123183"), DateTimeKind.Utc) },
                 new Tag { Id = Guid.Parse("d82c6890-d26d-450b-a920-08dbffad6d0e"), Name = "Прогулка", CreateTime = DateTime.SpecifyKind(DateTime.Parse("2024-11-18T14:40:53.0123178"), DateTimeKind.Utc) }
             );
-
+            
+            modelBuilder.Entity<CommunityUser>()
+                .HasKey(cu => new { cu.CommunityId, cu.UserId });
         }
 }
