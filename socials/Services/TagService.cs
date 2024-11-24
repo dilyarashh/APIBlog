@@ -7,7 +7,7 @@ namespace socials.Services;
 
 public class TagService : ITagService
 {
-    private readonly AppDBContext _context; // Замените YourDbContext на ваш контекст базы данных
+    private readonly AppDBContext _context; 
 
     public TagService(AppDBContext context)
     {

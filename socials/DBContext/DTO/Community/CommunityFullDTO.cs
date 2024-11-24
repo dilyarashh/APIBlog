@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using socials.DBContext.DTO.User;
 
 namespace socials.DBContext.DTO.Community;
 
@@ -20,5 +21,5 @@ public class CommunityFullDTO
 
     public int SubscribersCount { get; set; } = 0;
     
-    public List<CommunityUserDTO> Administrators { get; set; } = new List<CommunityUserDTO>();
+    public List<UserDTO> Administrators { get; set; } = new List<UserDTO>();
 }

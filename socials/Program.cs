@@ -29,6 +29,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<TokenInteractions>();
 builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICommunityService, CommunityService>();
 
 builder.Services.AddSwaggerGen(options =>
 { 

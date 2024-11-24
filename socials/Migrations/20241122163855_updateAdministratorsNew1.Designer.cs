@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using socials.DBContext;
@@ -11,9 +12,11 @@ using socials.DBContext;
 namespace socials.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241122163855_updateAdministratorsNew1")]
+    partial class updateAdministratorsNew1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,17 +69,17 @@ namespace socials.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                            CreateTime = new DateTime(2024, 11, 22, 16, 42, 49, 43, DateTimeKind.Utc).AddTicks(4070),
+                            Id = new Guid("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
+                            CreateTime = new DateTime(2024, 11, 22, 16, 38, 55, 49, DateTimeKind.Utc).AddTicks(580),
                             Description = "Публикуем мемы с котами!",
                             IsClosed = false,
                             Name = "Котята",
-                            SubscribersCount = 1
+                            SubscribersCount = 2
                         },
                         new
                         {
-                            Id = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                            CreateTime = new DateTime(2024, 11, 22, 16, 42, 49, 43, DateTimeKind.Utc).AddTicks(4080),
+                            Id = new Guid("f0e9d8c7-b6a5-4321-9876-543210fedcba"),
+                            CreateTime = new DateTime(2024, 11, 22, 16, 38, 55, 49, DateTimeKind.Utc).AddTicks(580),
                             Description = "Одобряем заявку только избранным",
                             IsClosed = true,
                             Name = "Секретное сообщество",
@@ -84,8 +87,8 @@ namespace socials.Migrations
                         },
                         new
                         {
-                            Id = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 22, 16, 42, 49, 43, DateTimeKind.Utc).AddTicks(4080),
+                            Id = new Guid("f0e6d8c9-b6a5-4321-9876-543110fedcba"),
+                            CreateTime = new DateTime(2024, 11, 22, 16, 38, 55, 49, DateTimeKind.Utc).AddTicks(580),
                             Description = "Делимся мнением о прочитанных книгах",
                             IsClosed = false,
                             Name = "Книжный клуб",
@@ -93,11 +96,11 @@ namespace socials.Migrations
                         },
                         new
                         {
-                            Id = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 22, 16, 42, 49, 43, DateTimeKind.Utc).AddTicks(4080),
+                            Id = new Guid("f0e6d8c9-b6a5-1234-9876-543110fedcba"),
+                            CreateTime = new DateTime(2024, 11, 22, 16, 38, 55, 49, DateTimeKind.Utc).AddTicks(580),
                             Description = "Самая модная одежда",
                             IsClosed = false,
-                            Name = "Самый крутой магазин одежды",
+                            Name = "Магазин одежды",
                             SubscribersCount = 1
                         });
                 });
@@ -122,25 +125,31 @@ namespace socials.Migrations
                     b.HasData(
                         new
                         {
-                            CommunityId = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
+                            CommunityId = new Guid("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
                             UserId = new Guid("1a85e616-8ff4-4a27-8859-14b444939b6c"),
                             Role = 0
                         },
                         new
                         {
-                            CommunityId = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
+                            CommunityId = new Guid("f0e6d8c9-b6a5-4321-9876-543110fedcba"),
                             UserId = new Guid("1a85e616-8ff4-4a27-8859-14b444939b6c"),
                             Role = 0
                         },
                         new
                         {
-                            CommunityId = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
+                            CommunityId = new Guid("f0e9d8c7-b6a5-4321-9876-543210fedcba"),
                             UserId = new Guid("1a85e616-8ff4-4a27-8859-14b444939b6c"),
                             Role = 0
                         },
                         new
                         {
-                            CommunityId = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
+                            CommunityId = new Guid("f0e6d8c9-b6a5-1234-9876-543110fedcba"),
+                            UserId = new Guid("64a8ff7a-537f-48f7-8351-f7cdefa89ff0"),
+                            Role = 0
+                        },
+                        new
+                        {
+                            CommunityId = new Guid("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
                             UserId = new Guid("64a8ff7a-537f-48f7-8351-f7cdefa89ff0"),
                             Role = 1
                         });

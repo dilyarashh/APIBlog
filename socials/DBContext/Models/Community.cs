@@ -20,5 +20,5 @@ public class Community
 
     public int SubscribersCount { get; set; } = 0;
     
-    public virtual ICollection<CommunityUser> Users { get; set; } = new HashSet<CommunityUser>();
+    public virtual ICollection<CommunityUser> CommunityUsers { get; set; } = new HashSet<CommunityUser>();
 }
