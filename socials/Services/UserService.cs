@@ -9,20 +9,12 @@ using socials.SupportiveServices.Token;
 using socials.SupportiveServices.Validations;
 
 namespace socials.Services;
-public class UserService : IUserService
+public class UserService(AppDBContext dbContext, TokenInteractions tokenService, HashPassword hashPassword)
+    : IUserService
 {
-    private readonly AppDBContext _dbContext;
-    private readonly TokenInteractions _tokenService;
-    private readonly HashPassword _hashPassword;
-    public UserService(AppDBContext dbContext, TokenInteractions tokenService, HashPassword hashPassword)
-    {
-        _dbContext = dbContext;
-        _tokenService = tokenService;
-        _hashPassword = hashPassword;
-    }
     private bool IsUniqueUserEmail(string email)
     {
-        var user = _dbContext.Users.FirstOrDefault(x => x.Email == email);
+        var user = dbContext.Users.FirstOrDefault(x => x.Email == email);
         if (user == null)
         {
             return true;
@@ -31,7 +23,7 @@ public class UserService : IUserService
     }
     private bool IsUniqueUserPhone(string phone)
     {
-        var user = _dbContext.Users.FirstOrDefault(x => x.Phone == phone);
+        var user = dbContext.Users.FirstOrDefault(x => x.Phone == phone);
         if (user == null)
         {
             return true;
@@ -75,7 +67,7 @@ public class UserService : IUserService
             throw new BadRequestException("Пароль должен содержать минимум 8 символов");
         }
         
-        string hashedPassword = _hashPassword.HashingPassword(registrationDto.Password);
+        string hashedPassword = hashPassword.HashingPassword(registrationDto.Password);
 
         User user = new User()
         {
@@ -89,10 +81,10 @@ public class UserService : IUserService
             CreateTime = DateTime.UtcNow
         };
         
-        await _dbContext.Users.AddAsync(user); 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Users.AddAsync(user); 
+        await dbContext.SaveChangesAsync();
 
-        var token = _tokenService.GenerateToken(user);
+        var token = tokenService.GenerateToken(user);
         return new TokenDTO
         {
             Token = token
@@ -105,7 +97,7 @@ public class UserService : IUserService
             throw new BadRequestException("Неверный формат email. Для авторизации введите ваш email.");
         }
         
-        var user = await _dbContext.Users.FirstOrDefaultAsync(d => d.Email == loginDto.Email);
+        var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Email == loginDto.Email);
         if (user == null)
         {
             throw new BadRequestException("Неправильный email");
@@ -115,7 +107,7 @@ public class UserService : IUserService
             throw new BadRequestException("Неправильный пароль");
         }
 
-        var token = _tokenService.GenerateToken(user);
+        var token = tokenService.GenerateToken(user);
         return new TokenDTO
         {
             Token = token
@@ -123,8 +115,8 @@ public class UserService : IUserService
     }
     public async Task<UserDTO> GetProfile(string? token)
     {
-        string userId = _tokenService.GetIdFromToken(token);
-        var user = await _dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
+        string userId = tokenService.GetIdFromToken(token);
+        var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
         if (user != null)
         {
             return new UserDTO
@@ -146,8 +138,8 @@ public class UserService : IUserService
     
     public async Task EditProfile(string? token, EditDTO editDto)
         {
-            var userId = _tokenService.GetIdFromToken(token);
-            var user = await _dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
+            var userId = tokenService.GetIdFromToken(token);
+            var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
             
             if (user != null)
             {
@@ -196,7 +188,7 @@ public class UserService : IUserService
 
                 user.Gender = editDto.Gender;
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
 
             else
@@ -206,12 +198,12 @@ public class UserService : IUserService
         }
     public async Task Logout(string? token)
     {
-        string id = _tokenService.GetIdFromToken(token);
+        string id = tokenService.GetIdFromToken(token);
 
         if (Guid.TryParse(id, out Guid userId) && userId != Guid.Empty)
         {
-            await _dbContext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token });
-            await _dbContext.SaveChangesAsync();
+            await dbContext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token });
+            await dbContext.SaveChangesAsync();
         }
         else
         {

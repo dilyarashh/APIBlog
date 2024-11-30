@@ -60,7 +60,6 @@ namespace socials.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Blacktoken")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -145,7 +144,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 30, 12, 20, 30, 658, DateTimeKind.Utc).AddTicks(6640),
                             Description = "Публикуем мемы с котами!",
                             IsClosed = false,
                             Name = "Котята",
@@ -154,7 +153,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 30, 12, 20, 30, 658, DateTimeKind.Utc).AddTicks(6640),
                             Description = "Одобряем заявку только избранным",
                             IsClosed = true,
                             Name = "Секретное сообщество",
@@ -163,7 +162,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 30, 12, 20, 30, 658, DateTimeKind.Utc).AddTicks(6650),
                             Description = "Делимся мнением о прочитанных книгах",
                             IsClosed = false,
                             Name = "Книжный клуб",
@@ -172,7 +171,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 30, 12, 20, 30, 658, DateTimeKind.Utc).AddTicks(6650),
                             Description = "Самая модная одежда",
                             IsClosed = false,
                             Name = "Самый крутой магазин одежды",
@@ -270,14 +269,9 @@ namespace socials.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -319,91 +313,91 @@ namespace socials.Migrations
                         {
                             Id = new Guid("e8f93a49-b93f-47f0-a912-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 10, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3266),
-                            Name = "Путешествия"
+                            Name = "#путешествия"
                         },
                         new
                         {
                             Id = new Guid("302d5c0c-5623-4810-a913-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 10, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3261),
-                            Name = "Стажировка"
+                            Name = "#стажировка"
                         },
                         new
                         {
                             Id = new Guid("2c4b19f5-511d-4f27-a914-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 12, 40, 53, 12, DateTimeKind.Utc).AddTicks(3256),
-                            Name = "Новости"
+                            Name = "#новости"
                         },
                         new
                         {
                             Id = new Guid("4676b2f4-de54-4fce-a915-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 12, 40, 53, 12, DateTimeKind.Utc).AddTicks(3252),
-                            Name = "Праздники"
+                            Name = "#праздники"
                         },
                         new
                         {
                             Id = new Guid("b0f1d7c7-18e5-488b-a916-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 12, 40, 53, 12, DateTimeKind.Utc).AddTicks(3247),
-                            Name = "Рестораны"
+                            Name = "#рестораны"
                         },
                         new
                         {
                             Id = new Guid("6cb7fe40-bafe-49bc-a917-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 12, 40, 53, 12, DateTimeKind.Utc).AddTicks(3237),
-                            Name = "Книги"
+                            Name = "#книги"
                         },
                         new
                         {
                             Id = new Guid("75735935-74d3-4fa2-a918-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 12, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3232),
-                            Name = "Фотография"
+                            Name = "#фотография"
                         },
                         new
                         {
                             Id = new Guid("ed1b936e-9c67-4da6-a919-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 12, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3227),
-                            Name = "Эстетика"
+                            Name = "#эстетика"
                         },
                         new
                         {
                             Id = new Guid("87a9c38c-0d2d-4a52-a91a-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 14, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3217),
-                            Name = "Кулинария"
+                            Name = "#кулинария"
                         },
                         new
                         {
                             Id = new Guid("5aa83ee6-9bb0-4afe-a91b-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 14, 40, 53, 12, DateTimeKind.Utc).AddTicks(3212),
-                            Name = "Музыка"
+                            Name = "#музыка"
                         },
                         new
                         {
                             Id = new Guid("6c20f45d-a7d1-4605-a91c-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 14, 40, 53, 12, DateTimeKind.Utc).AddTicks(3203),
-                            Name = "Танцы"
+                            Name = "#танцы"
                         },
                         new
                         {
                             Id = new Guid("dfcc00ff-6595-41ad-a91d-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 14, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3198),
-                            Name = "Рисование"
+                            Name = "#рисование"
                         },
                         new
                         {
                             Id = new Guid("bf1f4b00-cf9c-48e4-a91e-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 14, 16, 40, 53, 12, DateTimeKind.Utc).AddTicks(3188),
-                            Name = "Университет"
+                            Name = "#университет"
                         },
                         new
                         {
                             Id = new Guid("9ea305d2-b1f8-405e-a91f-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 14, 40, 53, 12, DateTimeKind.Utc).AddTicks(3183),
-                            Name = "Работа"
+                            Name = "#работа"
                         },
                         new
                         {
                             Id = new Guid("d82c6890-d26d-450b-a920-08dbffad6d0e"),
                             CreateTime = new DateTime(2024, 11, 18, 14, 40, 53, 12, DateTimeKind.Utc).AddTicks(3178),
-                            Name = "Прогулка"
+                            Name = "#прогулка"
                         });
                 });
 
@@ -484,10 +478,6 @@ namespace socials.Migrations
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("socials.DBContext.Models.User", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Address");
                 });
 
@@ -535,8 +525,6 @@ namespace socials.Migrations
             modelBuilder.Entity("socials.DBContext.Models.User", b =>
                 {
                     b.Navigation("Communities");
-
-                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,18 +5,11 @@ using socials.Services.IServices;
 
 namespace socials.Services;
 
-public class TagService : ITagService
+public class TagService(AppDBContext context) : ITagService
 {
-    private readonly AppDBContext _context; 
-
-    public TagService(AppDBContext context)
+    public async Task<List<TagDTO>> GetTags()
     {
-        _context = context;
-    }
-
-    public async Task<List<TagDTO>> GetTagsAsync()
-    {
-        return await _context.Tags 
+        return await context.Tags 
             .Select(tag => new TagDTO
             {
                 Name = tag.Name,
