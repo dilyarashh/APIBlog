@@ -1,30 +1,39 @@
 using System.Text.RegularExpressions;
 using socials.SupportiveServices.Validations;
 
-public class NameValidator
+public static class NameValidator
 {
-    public static bool IsValidName(string name)
+    public static bool IsValidFullName(string fullName)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(fullName))
         {
             return false;
         }
 
-        if (name.Length < 2)
+        string[] nameParts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (nameParts.Length < 2)
         {
             return false;
         }
 
-        if (!char.IsLetter(name[0]))
+        foreach (string namePart in nameParts)
         {
-            return false;
-        }
-
-        if (name.Any(c => !char.IsLetter(c) && !char.IsWhiteSpace(c)))
-        {
-            return false;
+            if (!IsValidNamePart(namePart))
+            {
+                return false;
+            }
         }
 
         return true;
+    }
+    private static bool IsValidNamePart(string namePart)
+    {
+        if (namePart.Length < 2 || !char.IsUpper(namePart[0]))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(namePart, "^[A-ZА-ЯЁ][a-zа-яё]+$"); 
     }
 }

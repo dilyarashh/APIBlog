@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using socials.DBContext;
@@ -11,9 +12,11 @@ using socials.DBContext;
 namespace socials.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241127062645_UpdateCommunityAgain")]
+    partial class UpdateCommunityAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,37 +24,6 @@ namespace socials.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("socials.DBContext.Models.AdressObject", b =>
-                {
-                    b.Property<Guid>("Objectguid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Isactive")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Level")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("Objectid")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Typename")
-                        .HasColumnType("text");
-
-                    b.HasKey("Objectguid");
-
-                    b.ToTable("AdressObject");
-                });
 
             modelBuilder.Entity("socials.DBContext.Models.BlackToken", b =>
                 {
@@ -145,7 +117,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 27, 6, 26, 45, 344, DateTimeKind.Utc).AddTicks(2950),
                             Description = "Публикуем мемы с котами!",
                             IsClosed = false,
                             Name = "Котята",
@@ -154,7 +126,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 27, 6, 26, 45, 344, DateTimeKind.Utc).AddTicks(2950),
                             Description = "Одобряем заявку только избранным",
                             IsClosed = true,
                             Name = "Секретное сообщество",
@@ -163,7 +135,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 27, 6, 26, 45, 344, DateTimeKind.Utc).AddTicks(2960),
                             Description = "Делимся мнением о прочитанных книгах",
                             IsClosed = false,
                             Name = "Книжный клуб",
@@ -172,7 +144,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 11, 27, 20, 3, 55, 517, DateTimeKind.Utc).AddTicks(6670),
+                            CreateTime = new DateTime(2024, 11, 27, 6, 26, 45, 344, DateTimeKind.Utc).AddTicks(2960),
                             Description = "Самая модная одежда",
                             IsClosed = false,
                             Name = "Самый крутой магазин одежды",
@@ -270,14 +242,7 @@ namespace socials.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -477,20 +442,6 @@ namespace socials.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("socials.DBContext.Models.Post", b =>
-                {
-                    b.HasOne("socials.DBContext.Models.AdressObject", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("socials.DBContext.Models.User", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Address");
-                });
-
             modelBuilder.Entity("socials.DBContext.Models.PostTag", b =>
                 {
                     b.HasOne("socials.DBContext.Models.Post", "Post")
@@ -535,8 +486,6 @@ namespace socials.Migrations
             modelBuilder.Entity("socials.DBContext.Models.User", b =>
                 {
                     b.Navigation("Communities");
-
-                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

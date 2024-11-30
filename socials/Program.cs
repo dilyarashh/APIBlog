@@ -16,8 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddDbContext<AppDBContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connection));
+builder.Services.AddDbContext<GARContext>(options => options.UseNpgsql(connection));
 
 builder.Services.AddControllers();
 
@@ -30,6 +31,9 @@ builder.Services.AddSingleton<TokenInteractions>();
 builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ICommunityService, CommunityService>();
+builder.Services.AddScoped<IAddressService, AdressService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 
 builder.Services.AddSwaggerGen(options =>
 { 
@@ -58,7 +62,7 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
-
+    options.EnableAnnotations();
 });
 
 builder.Services.AddAuthorization(services =>
@@ -115,5 +119,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<Middleware>();
 
 app.Run();

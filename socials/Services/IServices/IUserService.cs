@@ -6,11 +6,9 @@ namespace socials.Services.IServices;
 
 public interface IUserService
 {
-    bool IsUniqueUser(string email);
     public Task<TokenDTO> Register(RegistrationDTO registrationDto);
     public Task<TokenDTO> Login(LoginDTO loginDto);
-    public Task<UserDTO> GetProfile(string token);
-    public Task EditProfile(string token, EditDTO doctorEditDTO);
-    
-    public Task Logout(string token);
+    public Task<UserDTO> GetProfile(string? token);
+    public Task EditProfile(string? token, EditDTO userEditDTO);
+    public Task Logout(string? token);
 }

@@ -4,11 +4,11 @@ using socials.DBContext.Models;
 
 namespace socials.SupportiveServices.Exceptions;
 
- public class MiddleWare
+ public class Middleware
     {
         private readonly RequestDelegate _next;
 
-        public MiddleWare(RequestDelegate next)
+        public Middleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -47,11 +47,6 @@ namespace socials.SupportiveServices.Exceptions;
             {
                 statusCode = (int)HttpStatusCode.InternalServerError;
                 message = !string.IsNullOrEmpty(exception.Message) ? exception.Message : "Внутренняя ошибка сервера";
-            }
-            else if (exception is ForbiddenException)
-            {
-                statusCode = (int)HttpStatusCode.Forbidden;
-                message = !string.IsNullOrEmpty(exception.Message) ? exception.Message : "Вход запрещен";
             }
             else if (exception is NotFoundException)
             {

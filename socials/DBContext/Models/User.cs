@@ -23,4 +23,5 @@ public class User
     public string Email { get; set; }
     
     public virtual ICollection<CommunityUser> Communities { get; set; } = new HashSet<CommunityUser>();
+    
 }
