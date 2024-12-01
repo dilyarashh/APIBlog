@@ -5,7 +5,7 @@ using socials.Services.IServices;
 
 namespace socials.Services;
 
-public class TagService(AppDBContext context) : ITagService
+public class TagService(AppDbcontext context) : ITagService
 {
     public async Task<List<TagDTO>> GetTags()
     {

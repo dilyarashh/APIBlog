@@ -7,19 +7,15 @@ public class CommunityFullDTO
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public DateTime CreateTime { get; set; }
-
     [Required]
-    [MinLength(1)]
     public string Name { get; set; }
-
     public string? Description { get; set; }
-
+    [Required]
     public bool IsClosed { get; set; } = false;
-
+    [Required]
     public int SubscribersCount { get; set; } = 0;
-    
-    public List<UserDTO> Administrators { get; set; } = new List<UserDTO>();
+    [Required]
+    public List<UserDTO> Administrators { get; set; } = [];
 }

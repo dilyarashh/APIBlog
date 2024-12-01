@@ -2,23 +2,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace socials.DBContext.Models;
 
-public class Community
+public sealed class Community
 {
     [Required]
-    public Guid Id { get; set; }
-
+    public Guid Id { get; init; }
     [Required]
-    public DateTime CreateTime { get; set; }
-
+    public DateTime CreateTime { get; init; }
     [Required]
-    [MinLength(1)]
-    public string Name { get; set; }
-
-    public string? Description { get; set; }
-
-    public bool IsClosed { get; set; } = false;
-
-    public int SubscribersCount { get; set; } = 0;
-    
-    public virtual ICollection<CommunityUser> CommunityUsers { get; set; } = new HashSet<CommunityUser>();
+    public string Name { get; init; }
+    public string? Description { get; init; }
+    [Required]
+    public bool IsClosed { get; init; } 
+    [Required]
+    public int SubscribersCount { get; set; } 
+    public ICollection<CommunityUser> CommunityUsers { get; set; } = new HashSet<CommunityUser>();
 }

@@ -11,14 +11,16 @@ public class TokenInteractions
     private readonly string _secretKey;
     private readonly string _issuer;
     private readonly string _audience;
-    private readonly JwtSecurityTokenHandler _tokenHandler;
+    private JwtSecurityTokenHandler _tokenHandler;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public TokenInteractions(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+    public TokenInteractions(IConfiguration configuration, IServiceProvider serviceProvider, IHttpContextAccessor httpContextAccessor)
     {
-        _secretKey = configuration.GetValue<string>("AppSettings:Secret"); 
+        _secretKey = configuration.GetValue<string>("AppSettings:Secret");
         _issuer = configuration.GetValue<string>("AppSettings:Issuer");
         _audience = configuration.GetValue<string>("AppSettings:Audience");
+        _serviceProvider = serviceProvider;
         _httpContextAccessor = httpContextAccessor;
         _tokenHandler = new JwtSecurityTokenHandler();
     }

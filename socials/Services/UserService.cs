@@ -9,12 +9,12 @@ using socials.SupportiveServices.Token;
 using socials.SupportiveServices.Validations;
 
 namespace socials.Services;
-public class UserService(AppDBContext dbContext, TokenInteractions tokenService, HashPassword hashPassword)
+public class UserService(AppDbcontext dbcontext, TokenInteractions tokenService, HashPassword hashPassword)
     : IUserService
 {
     private bool IsUniqueUserEmail(string email)
     {
-        var user = dbContext.Users.FirstOrDefault(x => x.Email == email);
+        var user = dbcontext.Users.FirstOrDefault(x => x.Email == email);
         if (user == null)
         {
             return true;
@@ -23,7 +23,7 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
     }
     private bool IsUniqueUserPhone(string phone)
     {
-        var user = dbContext.Users.FirstOrDefault(x => x.Phone == phone);
+        var user = dbcontext.Users.FirstOrDefault(x => x.Phone == phone);
         if (user == null)
         {
             return true;
@@ -81,8 +81,8 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
             CreateTime = DateTime.UtcNow
         };
         
-        await dbContext.Users.AddAsync(user); 
-        await dbContext.SaveChangesAsync();
+        await dbcontext.Users.AddAsync(user); 
+        await dbcontext.SaveChangesAsync();
 
         var token = tokenService.GenerateToken(user);
         return new TokenDTO
@@ -97,7 +97,7 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
             throw new BadRequestException("Неверный формат email. Для авторизации введите ваш email.");
         }
         
-        var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Email == loginDto.Email);
+        var user = await dbcontext.Users.FirstOrDefaultAsync(d => d.Email == loginDto.Email);
         if (user == null)
         {
             throw new BadRequestException("Неправильный email");
@@ -115,8 +115,8 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
     }
     public async Task<UserDTO> GetProfile(string? token)
     {
-        string userId = tokenService.GetIdFromToken(token);
-        var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
+        var userId = tokenService.GetIdFromToken(token);
+        var user = await dbcontext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
         if (user != null)
         {
             return new UserDTO
@@ -139,7 +139,7 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
     public async Task EditProfile(string? token, EditDTO editDto)
         {
             var userId = tokenService.GetIdFromToken(token);
-            var user = await dbContext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
+            var user = await dbcontext.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
             
             if (user != null)
             {
@@ -188,7 +188,7 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
 
                 user.Gender = editDto.Gender;
 
-                await dbContext.SaveChangesAsync();
+                await dbcontext.SaveChangesAsync();
             }
 
             else
@@ -202,8 +202,8 @@ public class UserService(AppDBContext dbContext, TokenInteractions tokenService,
 
         if (Guid.TryParse(id, out Guid userId) && userId != Guid.Empty)
         {
-            await dbContext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token });
-            await dbContext.SaveChangesAsync();
+            await dbcontext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token });
+            await dbcontext.SaveChangesAsync();
         }
         else
         {

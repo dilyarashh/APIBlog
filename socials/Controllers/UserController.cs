@@ -43,7 +43,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetProfile()
     {
-        string? token = tokenService.GetTokenFromHeader();
+        var token = tokenService.GetTokenFromHeader();
         return Ok(await userService.GetProfile(token));
     }
     
@@ -56,7 +56,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> EditProfile([FromBody] EditDTO editDto)
     {
-        string? token = tokenService.GetTokenFromHeader();
+        var token = tokenService.GetTokenFromHeader();
         await userService.EditProfile(token, editDto);
         return Ok();
     }
@@ -69,7 +69,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> Logout()
     {
-        string? token = tokenService.GetTokenFromHeader();
+        var token = tokenService.GetTokenFromHeader();
         await userService.Logout(token);
         return Ok();
     }

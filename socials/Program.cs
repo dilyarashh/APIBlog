@@ -1,4 +1,3 @@
-using System.ComponentModel.Design;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +16,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 builder.Configuration.AddEnvironmentVariables();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connection));
+builder.Services.AddDbContext<AppDbcontext>(options => options.UseNpgsql(connection));
 builder.Services.AddDbContext<GARContext>(options => options.UseNpgsql(connection));
 
 builder.Services.AddControllers();
@@ -31,7 +30,7 @@ builder.Services.AddSingleton<TokenInteractions>();
 builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ICommunityService, CommunityService>();
-builder.Services.AddScoped<IAddressService, AdressService>();
+builder.Services.AddScoped<IAdressService, AdressService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 
@@ -41,11 +40,11 @@ builder.Services.AddSwaggerGen(options =>
     {
         Description = "Please enter token",
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer"
     });
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
     {
         {
             new OpenApiSecurityScheme
@@ -104,22 +103,30 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+
 var app = builder.Build();
 
-app.UseCors("AllowAllOrigins");
+try
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbcontext>();
+    await dbContext.Database.MigrateAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Ошибка при миграции базы данных: {ex.Message}");
+}
 
+app.UseHttpsRedirection(); // До авторизации и CORS
+app.UseCors("AllowAllOrigins"); // Теперь на своем месте
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+app.UseAuthorization(); // Авторизация после CORS и HTTPS
 app.MapControllers();
-
 app.UseMiddleware<Middleware>();
-
 app.Run();

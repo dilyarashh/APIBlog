@@ -1,126 +1,113 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using socials.DBContext.DTO.Community;
+using socials.DBContext.DTO.Post;
+using socials.DBContext.Models;
 using socials.DBContext.Models.Enums;
 using socials.Services.IServices;
 using socials.SupportiveServices.Exceptions;
 using socials.SupportiveServices.Token;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace socials.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class CommunitiesController : ControllerBase
+public class CommunitiesController(ICommunityService communityService, TokenInteractions tokenService)
+    : ControllerBase
 {
-    private readonly ICommunityService _communityService;
-    private readonly TokenInteractions _tokenService;
-
-    public CommunitiesController(ICommunityService communityService, TokenInteractions tokenService)
-    {
-        _communityService = communityService;
-        _tokenService = tokenService;
-    }
-    
     [HttpGet("list")]
+    [SwaggerOperation(Summary = "Получение списка всех сообществ")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityDTO))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetCommunityList()
     {
-        var communities = await _communityService.GetCommunityList();
+        var communities = await communityService.GetCommunityList();
         return Ok(communities);
     }
     
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetCommunity(Guid id)
-    {
-        var communityDto = await _communityService.GetCommunity(id);
-
-        if (communityDto == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(communityDto);
-    }
-    
     [Authorize(Policy = "TokenBlackListPolicy")]
-    [HttpGet]
+    [HttpGet("my")]
+    [SwaggerOperation(Summary = "Получение сообществ авторизованного пользователя")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityUserDTO))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetUserCommunity()
     {
-        string token = _tokenService.GetTokenFromHeader(); 
-
-        var communities = await _communityService.GetUserCommunity(token);
-
+        var token = tokenService.GetTokenFromHeader(); 
+        var communities = await communityService.GetUserCommunity(token);
         return Ok(communities);
     }
-
+    
+    [HttpGet("{id:guid}")]
+    [SwaggerOperation(Summary = "Получение информации о конкретном сообществе")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityFullDTO))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Сообщество не найдено")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    public async Task<IActionResult> GetCommunity(Guid id)
+    {
+        var community = await communityService.GetInformationAboutCommunity(id);
+        return Ok(community);
+    }
+    
     [Authorize(Policy = "TokenBlackListPolicy")]
-    [HttpGet("{communityId}/role")]
+    [HttpGet("{communityId:guid}/role")]
+    [SwaggerOperation(Summary = "Получение информации о роли авторизованного пользователя в конкретном сообществе")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityRole))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Сообщество не найдено")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetUserRoleInCommunity(Guid communityId)
     {
-        string token = _tokenService.GetTokenFromHeader();
-        var result = await _communityService.GetUserRoleAsync(communityId, token);
-        switch (result)
-        {
-            case CommunityRole role: 
-                return Ok(role);
-            case null: 
-                return NotFound();
-        }
+        var token = tokenService.GetTokenFromHeader();
+        var communityRole = await communityService.GetUserRoleInCommunity(communityId, token);
+        return Ok(communityRole);
+    }
+    
+    [Authorize(Policy = "TokenBlackListPolicy")]
+    [HttpPost("{communityId:guid}/post")] 
+    [SwaggerOperation(Summary = "Создание поста в конкретном сообществе")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Пост опубликован", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибки валидации", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    public async Task<IActionResult> CreatePost(Guid communityId, [FromBody] CreatePostDTO post) 
+    {
+        var token = tokenService.GetTokenFromHeader();
+        var postId = await communityService.CreatePostForCommunity(post, token, communityId);
+        return Ok(postId);
     }
     
     [Authorize(Policy = "TokenBlackListPolicy")]
     [HttpPost("{communityId}/subscribe")]
+    [SwaggerOperation(Summary = "Подписаться на сообщество")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Подписка осуществлена", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Пользователь уже подписан на сообщество", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> SubscribeToCommunity(Guid communityId) 
     {
-        try
-        {
-            string token = _tokenService.GetTokenFromHeader(); 
-            await _communityService.Subscribe(communityId, token);
-            return Ok();
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (DbUpdateException ex)
-        {
-            return Conflict("Произошла ошибка при обновлении базы данных.  Попробуйте позже.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Внутренняя ошибка сервера");
-        }
+        var token = tokenService.GetTokenFromHeader(); 
+        await communityService.SubscribeToCommunity(communityId, token);
+        return Ok();
     }
     
     [Authorize(Policy = "TokenBlackListPolicy")]
     [HttpPost("{communityId}/unsubscribe")]
-    public async Task<IActionResult> UnsubscribeToCommunity(Guid communityId) 
+    [SwaggerOperation(Summary = "Отписаться от сообщества")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Отписка осуществлена", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Пользователь не был подписан на сообщество", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    public async Task<IActionResult> UnsubscribeFromCommunity(Guid communityId) 
     {
-        try
-        {
-            string token = _tokenService.GetTokenFromHeader(); 
-            await _communityService.Unsubscribe(communityId, token);
-            return Ok();
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (DbUpdateException ex)
-        {
-            return Conflict("Произошла ошибка при обновлении базы данных.  Попробуйте позже.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Внутренняя ошибка сервера");
-        }
+        var token = tokenService.GetTokenFromHeader(); 
+        await communityService.UnsubscribeFromCommunity(communityId, token);
+        return Ok();
     }
 }

@@ -10,5 +10,5 @@ public interface IUserService
     public Task<TokenDTO> Login(LoginDTO loginDto);
     public Task<UserDTO> GetProfile(string? token);
     public Task EditProfile(string? token, EditDTO userEditDTO);
-    public Task Logout(string? token);
+    public Task Logout(string token);
 }

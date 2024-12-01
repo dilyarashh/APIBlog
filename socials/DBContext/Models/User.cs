@@ -6,13 +6,13 @@ namespace socials.DBContext.Models;
 public class User
 {
     [Required]
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     [Required]
-    public DateTime CreateTime { get; set; }
+    public DateTime CreateTime { get; init; }
     [Required]
     public  string Name { get; set; }
     [Required]
-    public string Password { get; set; }
+    public string Password { get; init; }
     [Required]
     public DateTime Birthday { get; set; }
     [Required]

@@ -4,5 +4,5 @@ namespace socials.Services.IServices;
 
 public interface ITagService
 {
-    Task<List<TagDTO>> GetTagsAsync();
+    Task<List<TagDTO>> GetTags();
 }
