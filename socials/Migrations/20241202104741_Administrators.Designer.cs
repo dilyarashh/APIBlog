@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using socials.DBContext;
@@ -11,9 +12,11 @@ using socials.DBContext;
 namespace socials.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241202104741_Administrators")]
+    partial class Administrators
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,9 +52,6 @@ namespace socials.Migrations
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CommentId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
@@ -65,7 +65,7 @@ namespace socials.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ParentCommentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PostId")
@@ -76,7 +76,9 @@ namespace socials.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentId");
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("PostId");
 
@@ -113,7 +115,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                            CreateTime = new DateTime(2024, 12, 1, 21, 47, 43, 985, DateTimeKind.Utc).AddTicks(1160),
+                            CreateTime = new DateTime(2024, 12, 2, 10, 47, 41, 516, DateTimeKind.Utc).AddTicks(2910),
                             Description = "Публикуем мемы с котами!",
                             IsClosed = false,
                             Name = "Котята",
@@ -122,7 +124,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                            CreateTime = new DateTime(2024, 12, 1, 21, 47, 43, 985, DateTimeKind.Utc).AddTicks(1160),
+                            CreateTime = new DateTime(2024, 12, 2, 10, 47, 41, 516, DateTimeKind.Utc).AddTicks(2910),
                             Description = "Одобряем заявку только избранным",
                             IsClosed = true,
                             Name = "Секретное сообщество",
@@ -131,7 +133,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 12, 1, 21, 47, 43, 985, DateTimeKind.Utc).AddTicks(1170),
+                            CreateTime = new DateTime(2024, 12, 2, 10, 47, 41, 516, DateTimeKind.Utc).AddTicks(2920),
                             Description = "Делимся мнением о прочитанных книгах",
                             IsClosed = false,
                             Name = "Книжный клуб",
@@ -140,7 +142,7 @@ namespace socials.Migrations
                         new
                         {
                             Id = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                            CreateTime = new DateTime(2024, 12, 1, 21, 47, 43, 985, DateTimeKind.Utc).AddTicks(1170),
+                            CreateTime = new DateTime(2024, 12, 2, 10, 47, 41, 516, DateTimeKind.Utc).AddTicks(2920),
                             Description = "Самая модная одежда",
                             IsClosed = false,
                             Name = "Самый крутой магазин одежды",
@@ -169,25 +171,25 @@ namespace socials.Migrations
                         new
                         {
                             CommunityId = new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                            UserId = new Guid("4c0a9494-51cc-438a-a47f-7ace8917fd9b"),
+                            UserId = new Guid("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"),
                             Role = 0
                         },
                         new
                         {
                             CommunityId = new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                            UserId = new Guid("4c0a9494-51cc-438a-a47f-7ace8917fd9b"),
+                            UserId = new Guid("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"),
                             Role = 0
                         },
                         new
                         {
                             CommunityId = new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                            UserId = new Guid("4c0a9494-51cc-438a-a47f-7ace8917fd9b"),
+                            UserId = new Guid("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"),
                             Role = 0
                         },
                         new
                         {
                             CommunityId = new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                            UserId = new Guid("4c0a9494-51cc-438a-a47f-7ace8917fd9b"),
+                            UserId = new Guid("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"),
                             Role = 0
                         });
                 });
@@ -430,15 +432,26 @@ namespace socials.Migrations
 
             modelBuilder.Entity("socials.DBContext.Models.Comment", b =>
                 {
-                    b.HasOne("socials.DBContext.Models.Comment", null)
+                    b.HasOne("socials.DBContext.Models.User", "AuthorUser")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("socials.DBContext.Models.Comment", "ParentComment")
                         .WithMany("SubCommentsList")
-                        .HasForeignKey("CommentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("socials.DBContext.Models.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AuthorUser");
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Post");
                 });
@@ -524,6 +537,8 @@ namespace socials.Migrations
 
             modelBuilder.Entity("socials.DBContext.Models.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Communities");
                 });
 #pragma warning restore 612, 618

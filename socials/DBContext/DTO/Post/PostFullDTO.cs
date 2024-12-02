@@ -43,5 +43,5 @@ public class PostFullDTO
     
     public List<Guid> Tags { get; set; }
     
-    public List<Comment> Comments { get; set; }
+    public List<Models.Comment> Comments { get; set; }
 }

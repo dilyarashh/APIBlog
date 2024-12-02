@@ -97,38 +97,6 @@ namespace socials.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: false),
-                    SubComments = table.Column<int>(type: "integer", nullable: false),
-                    ParentCommentId = table.Column<Guid>(type: "uuid", nullable: true),
-                    PostId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CommentId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Comments_Posts_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostTags",
                 columns: table => new
                 {
@@ -150,6 +118,43 @@ namespace socials.Migrations
                         principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubComments = table.Column<int>(type: "integer", nullable: false),
+                    ParentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PostId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_Comments_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Comments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,15 +182,39 @@ namespace socials.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PostLikes",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PostId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostLikes", x => new { x.PostId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_PostLikes_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostLikes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Communities",
                 columns: new[] { "Id", "CreateTime", "Description", "IsClosed", "Name", "SubscribersCount" },
                 values: new object[,]
                 {
-                    { new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"), new DateTime(2024, 12, 1, 12, 45, 29, 39, DateTimeKind.Utc).AddTicks(3010), "Публикуем мемы с котами!", false, "Котята", 1 },
-                    { new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"), new DateTime(2024, 12, 1, 12, 45, 29, 39, DateTimeKind.Utc).AddTicks(3010), "Делимся мнением о прочитанных книгах", false, "Книжный клуб", 1 },
-                    { new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"), new DateTime(2024, 12, 1, 12, 45, 29, 39, DateTimeKind.Utc).AddTicks(3010), "Самая модная одежда", false, "Самый крутой магазин одежды", 1 },
-                    { new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"), new DateTime(2024, 12, 1, 12, 45, 29, 39, DateTimeKind.Utc).AddTicks(3010), "Одобряем заявку только избранным", true, "Секретное сообщество", 1 }
+                    { new Guid("a1b2c3d4-e5f6-0000-1234-567890abcdef"), new DateTime(2024, 12, 2, 10, 11, 56, 333, DateTimeKind.Utc).AddTicks(7040), "Публикуем мемы с котами!", false, "Котята", 1 },
+                    { new Guid("f0e6d8c9-b6a5-2222-9876-543110fedcba"), new DateTime(2024, 12, 2, 10, 11, 56, 333, DateTimeKind.Utc).AddTicks(7050), "Делимся мнением о прочитанных книгах", false, "Книжный клуб", 1 },
+                    { new Guid("f0e6d8c9-b6a5-3333-9876-543110fedcba"), new DateTime(2024, 12, 2, 10, 11, 56, 333, DateTimeKind.Utc).AddTicks(7050), "Самая модная одежда", false, "Самый крутой магазин одежды", 1 },
+                    { new Guid("f0e9d8c7-b6a5-1111-9876-543210fedcba"), new DateTime(2024, 12, 2, 10, 11, 56, 333, DateTimeKind.Utc).AddTicks(7050), "Одобряем заявку только избранным", true, "Секретное сообщество", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -212,9 +241,14 @@ namespace socials.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_CommentId",
+                name: "IX_Comments_AuthorId",
                 table: "Comments",
-                column: "CommentId");
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_ParentId",
+                table: "Comments",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_PostId",
@@ -224,6 +258,11 @@ namespace socials.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CommunityUsers_UserId",
                 table: "CommunityUsers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostLikes_UserId",
+                table: "PostLikes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -243,6 +282,9 @@ namespace socials.Migrations
 
             migrationBuilder.DropTable(
                 name: "CommunityUsers");
+
+            migrationBuilder.DropTable(
+                name: "PostLikes");
 
             migrationBuilder.DropTable(
                 name: "PostTags");

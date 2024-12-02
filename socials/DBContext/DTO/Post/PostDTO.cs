@@ -45,5 +45,5 @@ public class PostDTO
     
     public List<TagDTO> Tags { get; set; }
     
-    public List<Comment> Comments { get; set; }
+    public List<Models.Comment> Comments { get; set; }
 }

@@ -14,7 +14,6 @@ namespace socials.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class CommunitiesController(ICommunityService communityService, TokenInteractions tokenService)
     : ControllerBase
 {

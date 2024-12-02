@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICommunityService, CommunityService>();
 builder.Services.AddScoped<IAdressService, AdressService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddSwaggerGen(options =>
 { 

@@ -16,7 +16,6 @@ public class AppDbcontext(DbContextOptions<AppDbcontext> options) : DbContext(op
     public DbSet<Post> Posts { get; set; } 
     
     public DbSet<PostTags> PostTags { get; set; }
-    
     public DbSet<PostLike> PostLikes { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +26,24 @@ public class AppDbcontext(DbContextOptions<AppDbcontext> options) : DbContext(op
         
         modelBuilder.Entity<PostLike>()
             .HasKey(pl => new { pl.PostId, pl.UserId });
+        
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.AuthorUser)
+            .WithMany(u => u.Comments) 
+            .HasForeignKey(c => c.AuthorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.Post)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Restrict); 
+
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.ParentComment)
+            .WithMany(p => p.SubCommentsList)
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Restrict); 
 
         modelBuilder.Entity<PostTags>(entity =>
         {
@@ -167,25 +184,25 @@ public class AppDbcontext(DbContextOptions<AppDbcontext> options) : DbContext(op
             new CommunityUser
             {
                 CommunityId = Guid.Parse("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                UserId = Guid.Parse("4c0a9494-51cc-438a-a47f-7ace8917fd9b"), 
+                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                UserId = Guid.Parse("4c0a9494-51cc-438a-a47f-7ace8917fd9b"), 
+                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                UserId = Guid.Parse("4c0a9494-51cc-438a-a47f-7ace8917fd9b"), 
+                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                UserId = Guid.Parse("4c0a9494-51cc-438a-a47f-7ace8917fd9b"), 
+                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
                 Role = CommunityRole.Administrator
             }
         );

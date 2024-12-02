@@ -29,6 +29,6 @@ public class Post
     public bool HasLike { get; set; }
     [Required]
     public int CommentsCount { get; set; }
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>(); 
     public ICollection<PostTags> PostTags { get; set; } = new List<PostTags>();
 }

@@ -1,18 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace socials.DBContext.Models;
 
 public class Comment
 {
     [Key]
-    [Required]
     public Guid Id { get; set; }
     
     [Required]
     public DateTime CreateTime { get; set; }
     
     [Required]
-    public String Content { get; set; }
+    public string Content { get; set; }
     
     public DateTime? ModifiedDate { get; set; }
     
@@ -21,17 +21,23 @@ public class Comment
     [Required]
     public Guid AuthorId { get; set; }
     
-    [Required]
+    [ForeignKey("AuthorId")]
+    public virtual User AuthorUser { get; set; }
+    
     public string Author { get; set; }
     
-    [Required]
     public int SubComments { get; set; }
     
-    public List<Comment> SubCommentsList { get; set; }
+    public virtual List<Comment> SubCommentsList { get; set; } = new List<Comment>();
     
-    public Guid? ParentCommentId { get; set; }
+    public Guid? ParentId { get; set; }
     
+    [ForeignKey("ParentId")]
+    public virtual Comment ParentComment { get; set; }
+
+    [Required]
     public Guid PostId { get; set; }
     
+    [ForeignKey("PostId")]
     public virtual Post Post { get; set; }
 }

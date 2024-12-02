@@ -24,4 +24,6 @@ public class User
     
     public virtual ICollection<CommunityUser> Communities { get; set; } = new HashSet<CommunityUser>();
     
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    
 }
