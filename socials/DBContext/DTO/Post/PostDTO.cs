@@ -43,7 +43,5 @@ public class PostDTO
     [Required]
     public int CommentsCount { get; set; }
     
-    public List<TagDTO> Tags { get; set; }
-    
-    public List<Models.Comment> Comments { get; set; }
+    public List<Guid> Tags { get; set; }
 }

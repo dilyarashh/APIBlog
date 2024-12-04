@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using socials.DBContext.DTO.Post;
 using socials.DBContext.Models;
+using socials.DBContext.Models.Enums;
 using socials.Services.IServices;
 using socials.SupportiveServices.Token;
 using Swashbuckle.AspNetCore.Annotations;
@@ -69,5 +71,21 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
         var userId = tokenService.GetIdFromToken(token);
         var result = await postService.DeleteLikeFromPost(postId, Guid.Parse(userId));
         return Ok(result);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetPostsAsync(
+        [FromQuery] string[]? tags,
+        [FromQuery] string? author,
+        [FromQuery] int? min,
+        [FromQuery] int? max,
+        [FromQuery] SortingOrder sorting = SortingOrder.CreateDesc,
+        [FromQuery] bool onlyMyCommunities = false,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 5)
+    {
+        var token = tokenService.GetTokenFromHeader();
+        var posts = await postService.GetPosts(token, tags, author, min, max, sorting, onlyMyCommunities, page, size);
+        return Ok(posts);
     }
 }

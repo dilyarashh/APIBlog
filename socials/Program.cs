@@ -129,5 +129,5 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthorization(); // Авторизация после CORS и HTTPS
 app.MapControllers();
-app.UseMiddleware<Middleware>();
+//app.UseMiddleware<Middleware>();
 app.Run();

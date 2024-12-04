@@ -226,17 +226,84 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
         {
             throw new NotFoundException("Такого сообщества не существует");
         }
-
+        
         var existingSubscription = await context.CommunityUsers
             .FirstOrDefaultAsync(s => s.UserId == Guid.Parse(userId) && s.CommunityId == communityId);
         if (existingSubscription == null)
         {
             throw new BadRequestException("Вы не подписаны на это сообщество");
         }
-
+        
+        var user = await context.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
+        var isCommunityAdmin = await context.CommunityUsers
+            .AnyAsync(cu => cu.UserId == user.Id && cu.CommunityId == communityId && cu.Role==0);
+        if (!isCommunityAdmin)
+        {
+            throw new BadRequestException("Администратор не может отписаться от сообщества");
+        }
+        
         context.CommunityUsers.Remove(existingSubscription);
         community.SubscribersCount--;
 
         await context.SaveChangesAsync();
+    }
+    
+    public async Task<PaginatedList<PostDTO>> GetCommunityPosts(Guid communityId, string[]? tags, SortingOrder sortingOrder, int page, int size)
+    {
+        var query = context.Posts
+            .Include(p => p.Comments)
+            .Include(p => p.PostTags)
+            .ThenInclude(pt => pt.Tag)
+            .Where(p => p.CommunityId == communityId) 
+            .AsQueryable();
+
+        if (tags != null && tags.Length > 0)
+        {
+            query = query.Where(p => p.PostTags.Any(pt => tags.Contains(pt.Tag.Name)));
+        }
+
+        switch (sortingOrder)
+        {
+            case SortingOrder.CreateDesc:
+                query = query.OrderByDescending(p => p.CreateTime);
+                break;
+            case SortingOrder.CreateAsc:
+                query = query.OrderBy(p => p.CreateTime);
+                break;
+            case SortingOrder.LikeAsc:
+                query = query.OrderBy(p => p.Likes);
+                break;
+            case SortingOrder.LikeDesc:
+                query = query.OrderByDescending(p => p.Likes);
+                break;
+            default:
+                query = query.OrderByDescending(p => p.CreateTime); 
+                break;
+        }
+
+        var posts = await query
+            .Skip((page - 1) * size)
+            .Take(size)
+            .Select(p => new PostDTO
+            {
+                Id = p.Id,
+                CreateTime = p.CreateTime,
+                Title = p.Title,
+                Description = p.Description,
+                ReadingTime = p.ReadingTime,
+                Image = p.Image,
+                AuthorId = p.AuthorId,
+                Author = p.Author,
+                CommunityId = p.CommunityId,
+                CommunityName = p.CommunityName,
+                AddressId = p.AddressId,
+                Likes = p.Likes,
+                CommentsCount = p.CommentsCount,
+                Tags = p.PostTags.Select(pt => pt.TagId).ToList(),
+            })
+            .ToListAsync();
+
+        int totalPosts = await query.CountAsync();
+        return new PaginatedList<PostDTO>(posts, page, size, totalPosts);
     }
 }

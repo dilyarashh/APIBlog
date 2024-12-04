@@ -3,12 +3,14 @@ using socials.DBContext;
 using socials.DBContext.DTO.Post;
 using socials.DBContext.DTO.Tag;
 using socials.DBContext.Models;
+using socials.DBContext.Models.Enums;
 using socials.Services.IServices;
 using socials.SupportiveServices.Exceptions;
 using socials.SupportiveServices.Token;
 using socials.SupportiveServices.Validations;
 
 namespace socials.Services;
+
 public class PostService(AppDbcontext context, TokenInteractions tokenService, GARContext garContext)
     : IPostService
 {
@@ -19,8 +21,9 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             throw new UnauthorizedException("Пользователь не авторизован");
         }
+
         var user = await context.Users.FirstOrDefaultAsync(d => d.Id == Guid.Parse(userId));
-        
+
         var address = await garContext.AsAddrObjs.FirstOrDefaultAsync(a => a.Objectguid == post.AddressId);
         if (address == null)
         {
@@ -30,13 +33,13 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
                 throw new NotFoundException("Такого адреса не существует");
             }
         }
-        
-        if(!TitleValidator.ValidateTitle(post.Title))
+
+        if (!TitleValidator.ValidateTitle(post.Title))
         {
             throw new BadRequestException("Длина заголовка должна быть от 1 до 100 символов");
         }
-        
-        if(!DescriptionValidator.ValidateDescription(post.Description))
+
+        if (!DescriptionValidator.ValidateDescription(post.Description))
         {
             throw new BadRequestException("Длина описания должна быть от 1 до 3000 символов");
         }
@@ -45,16 +48,16 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             throw new BadRequestException("Время чтения не может быть отрицательным");
         }
-        
-        if (!UrlValidator.IsValidUrl(post.Image)) 
+
+        if (!UrlValidator.IsValidUrl(post.Image))
         {
             throw new BadRequestException("Некорректный формат ссылки на изображение");
         }
-        
+
         var newPost = new Post
         {
             Id = Guid.NewGuid(),
-            CreateTime = DateTime.UtcNow, 
+            CreateTime = DateTime.UtcNow,
             Title = post.Title,
             Description = post.Description,
             ReadingTime = post.ReadingTime,
@@ -75,7 +78,8 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             throw new NotFoundException("Введите существующие теги");
         }
-        foreach (var tag in existingTags) 
+
+        foreach (var tag in existingTags)
         {
             newPost.PostTags.Add(new PostTags { PostId = newPost.Id, TagId = tag.Id });
         }
@@ -84,21 +88,21 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         await context.SaveChangesAsync();
         return newPost.Id;
     }
-    
-    public async Task<PostDTO> GetPostById(Guid id)
+
+    public async Task<PostFullDTO> GetPostById(Guid id)
     {
         var post = await context.Posts
             .Include(p => p.PostTags)
             .ThenInclude(pt => pt.Tag)
             .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Id == id);
-        
+
         if (post == null)
         {
             throw new NotFoundException("Такого поста не существует");
         }
 
-        return new PostDTO
+        return new PostFullDTO
         {
             Id = post.Id,
             CreateTime = post.CreateTime,
@@ -112,29 +116,29 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
             CommunityName = post.CommunityName,
             AddressId = post.AddressId,
             Likes = post.Likes,
-            HasLike = post.HasLike, 
+            HasLike = post.HasLike,
             CommentsCount = post.Comments.Count,
             Tags = post.PostTags.Select(pt => new TagDTO
             {
                 Id = pt.Tag.Id,
-                CreateTime = pt.Tag.CreateTime, 
+                CreateTime = pt.Tag.CreateTime,
                 Name = pt.Tag.Name
             }).ToList(),
             Comments = post.Comments.Select(c => new Comment
             {
                 Id = c.Id,
-                CreateTime = c.CreateTime, 
-                Content = c.Content, 
-                ModifiedDate = c.ModifiedDate, 
-                DeleteDate = c.DeleteDate, 
+                CreateTime = c.CreateTime,
+                Content = c.Content,
+                ModifiedDate = c.ModifiedDate,
+                DeleteDate = c.DeleteDate,
                 AuthorId = c.AuthorId,
-                Author = c.Author, 
-                SubComments = c.SubComments 
+                Author = c.Author,
+                SubComments = c.SubComments
             }).ToList()
         };
     }
-    
-    public async Task<bool> AddLikeToPost(Guid postId, Guid userId) 
+
+    public async Task<bool> AddLikeToPost(Guid postId, Guid userId)
     {
         var existingLike = await context.PostLikes
             .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
@@ -149,30 +153,37 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             throw new NotFoundException("Такого поста не существует");
         }
-        
+
         var community = await context.Communities.FirstOrDefaultAsync(c => c.Id == post.CommunityId);
-        if (community is { IsClosed: true }) 
+        if (community is { IsClosed: true })
         {
-            var isMember = await context.CommunityUsers.AnyAsync(cu => cu.CommunityId == post.CommunityId && cu.UserId == userId);
+            var isMember =
+                await context.CommunityUsers.AnyAsync(cu => cu.CommunityId == post.CommunityId && cu.UserId == userId);
             if (!isMember)
             {
-                throw new BadRequestException("Для того, чтобы поставить лайк на пост закрытой группы, нужно быть её подписчиком");
+                throw new BadRequestException(
+                    "Для того, чтобы поставить лайк на пост закрытой группы, нужно быть её подписчиком");
             }
         }
-        
+
         context.PostLikes.Add(new PostLike { PostId = postId, UserId = userId });
         await context.SaveChangesAsync();
 
         post.Likes++;
-        if (post.Likes > 0) { post.HasLike = true; }
-        await context.SaveChangesAsync(); 
+        if (post.Likes > 0)
+        {
+            post.HasLike = true;
+        }
+
+        await context.SaveChangesAsync();
 
         return true;
     }
-    
-    public async Task<bool> DeleteLikeFromPost(Guid postId, Guid userId) 
+
+    public async Task<bool> DeleteLikeFromPost(Guid postId, Guid userId)
     {
-        var existingLike = await context.PostLikes.FirstOrDefaultAsync(pl => pl.PostId == postId && pl.UserId == userId);
+        var existingLike =
+            await context.PostLikes.FirstOrDefaultAsync(pl => pl.PostId == postId && pl.UserId == userId);
 
         if (existingLike == null)
         {
@@ -184,14 +195,125 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             throw new NotFoundException("Такого поста не существует");
         }
-        
+
         context.PostLikes.Remove(existingLike);
         await context.SaveChangesAsync();
-        
+
         post.Likes--;
-        if (post.Likes == 0) { post.HasLike = false; }
+        if (post.Likes == 0)
+        {
+            post.HasLike = false;
+        }
+
         await context.SaveChangesAsync();
-        
+
         return true;
     }
-}
+    
+    public async Task<PaginatedList<PostDTO>> GetPosts(
+            string? token,
+            string[]? tags,
+            string? author,
+            int? min,
+            int? max,
+            SortingOrder sortingOrder,
+            bool onlyMyCommunities,
+            int page = 1,
+            int size = 5)
+        {
+            var stringUserId = tokenService.GetIdFromToken(token);
+            Guid userId = Guid.Parse(stringUserId);
+
+            var query = context.Posts
+                .Include(p => p.Comments)
+                .Include(p => p.PostTags)
+                .ThenInclude(pt => pt.Tag)
+                .AsQueryable();
+
+            if (tags != null && tags.Length > 0)
+            {
+                query = query.Where(p => p.PostTags.Any(pt => tags.Contains(pt.Tag.Name)));
+            }
+
+            if (!string.IsNullOrEmpty(author))
+            {
+                query = query.Where(p => p.Author.Contains(author));
+            }
+
+            if (min.HasValue)
+            {
+                query = query.Where(p => p.ReadingTime >= min.Value);
+            }
+            if (max.HasValue)
+            {
+                query = query.Where(p => p.ReadingTime <= max.Value);
+            }
+
+            if (onlyMyCommunities)
+            {
+                var userCommunityIds = await context.CommunityUsers 
+                    .Where(uc => uc.UserId == userId)
+                    .Select(uc => uc.CommunityId)
+                    .ToListAsync();
+
+                query = query.Where(p => userCommunityIds.Contains(p.CommunityId ?? Guid.Empty));
+            }
+            
+            switch (sortingOrder)
+            {
+                case SortingOrder.CreateDesc:
+                    query = query.OrderByDescending(p => p.CreateTime);
+                    break;
+                case SortingOrder.CreateAsc:
+                    query = query.OrderBy(p => p.CreateTime);
+                    break;
+                case SortingOrder.LikeAsc:
+                    query = query.OrderBy(p => p.Likes);
+                    break;
+                case SortingOrder.LikeDesc:
+                    query = query.OrderByDescending(p => p.Likes);
+                    break;
+                default:
+                    query = query.OrderByDescending(p => p.CreateTime); 
+                    break;
+            }
+
+            var posts = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(p => new PostDTO
+                {
+                    Id = p.Id,
+                    CreateTime = p.CreateTime,
+                    Title = p.Title,
+                    Description = p.Description,
+                    ReadingTime = p.ReadingTime,
+                    Image = p.Image,
+                    AuthorId = p.AuthorId,
+                    Author = p.Author,
+                    CommunityId = p.CommunityId,
+                    CommunityName = p.CommunityName,
+                    AddressId = p.AddressId,
+                    Likes = p.Likes,
+                    CommentsCount = p.CommentsCount,
+                    Tags = p.PostTags.Select(pt => pt.TagId).ToList(),
+                })
+                .ToListAsync();
+
+            int totalPosts = await query.CountAsync();
+            return new PaginatedList<PostDTO>(posts, page, size, totalPosts);
+        }
+    }
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+

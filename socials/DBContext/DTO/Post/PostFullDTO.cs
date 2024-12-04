@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using socials.DBContext.DTO.Tag;
 using socials.DBContext.Models;
 
 namespace socials.DBContext.DTO.Post;
@@ -37,11 +38,13 @@ public class PostFullDTO
     
     [Required]
     public int Likes { get; set; }
+    [Required]
+    public bool HasLike { get; set; }
 
     [Required]
     public int CommentsCount { get; set; }
     
-    public List<Guid> Tags { get; set; }
+    public List<TagDTO> Tags { get; set; }
     
-    public List<Models.Comment> Comments { get; set; }
+    public List<Models.Comment> Comments { get; set; } = new List<Models.Comment>();
 }

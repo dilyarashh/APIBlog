@@ -109,4 +109,16 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
         await communityService.UnsubscribeFromCommunity(communityId, token);
         return Ok();
     }
+    
+    [HttpGet("{id}/listposts")]
+    public async Task<IActionResult> GetCommunityPostsAsync(
+        [FromRoute] Guid id, 
+        [FromQuery] string[]? tags,
+        [FromQuery] SortingOrder sorting = SortingOrder.CreateDesc, 
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 5)
+    {
+        var posts = await communityService.GetCommunityPosts(id, tags, sorting, page, size);
+        return Ok(posts);
+    }
 }
