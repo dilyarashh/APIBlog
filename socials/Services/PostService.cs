@@ -223,6 +223,34 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
         {
             var stringUserId = tokenService.GetIdFromToken(token);
             Guid userId = Guid.Parse(stringUserId);
+            
+            if (page <= 0 || size <= 0)
+            {
+                throw new BadRequestException("Номер страницы и размер страницы должны быть положительными числами");
+            }
+            
+            if (min <= 0 || max <= 0)
+            {
+                throw new BadRequestException("Параметры времени чтения должны быть положительными числами");
+            }
+        
+            if (tags != null && tags.Length > 0)
+            {
+                bool atLeastOneTagExists = await context.Tags.AnyAsync(t => tags.Contains(t.Name));
+                if (!atLeastOneTagExists)
+                {
+                    throw new NotFoundException("Ни один из указанных тегов не найден");
+                }
+            }
+            
+            if (!string.IsNullOrEmpty(author))
+            {
+                bool authorExists = await context.Posts.AnyAsync(p => p.Author.Contains(author));
+                if (!authorExists)
+                {
+                    throw new NotFoundException($"Автор с именем или частью имени '{author}' не найден");
+                }
+            }
 
             var query = context.Posts
                 .Include(p => p.Comments)
@@ -278,6 +306,13 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
                     break;
             }
 
+            int totalPosts = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalPosts / (double)size);
+            if (page > totalPages && totalPosts > 0) 
+            {
+                throw new NotFoundException("Запрошенная страница не существует");
+            }
+            
             var posts = await query
                 .Skip((page - 1) * size)
                 .Take(size)
@@ -299,8 +334,7 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
                     Tags = p.PostTags.Select(pt => pt.TagId).ToList(),
                 })
                 .ToListAsync();
-
-            int totalPosts = await query.CountAsync();
+            
             return new PaginatedList<PostDTO>(posts, page, size, totalPosts);
         }
     }

@@ -20,24 +20,13 @@ builder.Services.AddDbContext<AppDbcontext>(options => options.UseNpgsql(connect
 builder.Services.AddDbContext<GARContext>(options => options.UseNpgsql(connection));
 
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<HashPassword>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<TokenInteractions>();
-builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
-builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddScoped<ICommunityService, CommunityService>();
-builder.Services.AddScoped<IAdressService, AdressService>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddSwaggerGen(options =>
 { 
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Please enter token",
         Name = "Authorization",
@@ -75,36 +64,23 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.AllowAnyOrigin() // Позволяет любой домен
-                .AllowAnyMethod() // Позволяет любые методы (GET, POST и т.д.)
-                .AllowAnyHeader(); // Позволяет любые заголовки
+            builder.AllowAnyOrigin() 
+                .AllowAnyMethod() 
+                .AllowAnyHeader(); 
         });
 });
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
-var secretKey = builder.Configuration["AppSettings:Secret"];
-
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-            ValidAudience = builder.Configuration["AppSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-        };
-    });
-
-
+builder.Services.AddSingleton<TokenInteractions>();
+builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICommunityService, CommunityService>();
+builder.Services.AddScoped<IAdressService, AdressService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<HashPassword>();
 
 var app = builder.Build();
 
@@ -120,14 +96,16 @@ catch (Exception ex)
     Console.WriteLine($"Ошибка при миграции базы данных: {ex.Message}");
 }
 
-app.UseHttpsRedirection(); // До авторизации и CORS
-app.UseCors("AllowAllOrigins"); // Теперь на своем месте
+app.UseHttpsRedirection(); 
+app.UseCors("AllowAllOrigins"); 
+app.UseAuthentication();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseAuthorization(); // Авторизация после CORS и HTTPS
+
+app.UseAuthorization(); 
 app.MapControllers();
-//app.UseMiddleware<Middleware>();
+app.UseMiddleware<Middleware>();
 app.Run();

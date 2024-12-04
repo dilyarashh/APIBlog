@@ -110,7 +110,13 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
         return Ok();
     }
     
-    [HttpGet("{id}/listposts")]
+    [Authorize(Policy = "TokenBlackListPolicy")]
+    [HttpGet("{id}/list posts")]
+    [SwaggerOperation(Summary = "Получить посты определенного сообщества")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetCommunityPostsAsync(
         [FromRoute] Guid id, 
         [FromQuery] string[]? tags,

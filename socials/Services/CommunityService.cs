@@ -250,11 +250,31 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
     
     public async Task<PaginatedList<PostDTO>> GetCommunityPosts(Guid communityId, string[]? tags, SortingOrder sortingOrder, int page, int size)
     {
+        var community = await context.Communities.FindAsync(communityId);
+        if (community == null)
+        {
+            throw new NotFoundException("Такого сообщества не существует");
+        }
+        
+        if (page <= 0 || size <= 0)
+        {
+            throw new BadRequestException("Номер страницы и размер страницы должны быть положительными числами");
+        }
+        
+        if (tags != null && tags.Length > 0)
+        {
+            bool atLeastOneTagExists = await context.Tags.AnyAsync(t => tags.Contains(t.Name));
+            if (!atLeastOneTagExists)
+            {
+                throw new NotFoundException("Ни один из указанных тегов не найден");
+            }
+        }
+
         var query = context.Posts
             .Include(p => p.Comments)
             .Include(p => p.PostTags)
             .ThenInclude(pt => pt.Tag)
-            .Where(p => p.CommunityId == communityId) 
+            .Where(p => p.CommunityId == communityId)
             .AsQueryable();
 
         if (tags != null && tags.Length > 0)
@@ -280,7 +300,14 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
                 query = query.OrderByDescending(p => p.CreateTime); 
                 break;
         }
-
+        
+        int totalPosts = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling(totalPosts / (double)size);
+        if (page > totalPages && totalPosts > 0) 
+        {
+            throw new NotFoundException("Запрошенная страница не существует");
+        }
+        
         var posts = await query
             .Skip((page - 1) * size)
             .Take(size)
@@ -303,7 +330,6 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
             })
             .ToListAsync();
 
-        int totalPosts = await query.CountAsync();
         return new PaginatedList<PostDTO>(posts, page, size, totalPosts);
     }
 }

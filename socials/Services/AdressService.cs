@@ -55,7 +55,7 @@ public class AdressService(GARContext context) : IAdressService
             addressList.Add(searchHouseModel);
 
             var houseHierarchy = await context.AsAdmHierarchies
-                .Where(x => x.Objectid == house.Objectid && x.Isactive == 1)
+                .Where(x => x.Objectid == house.Objectid)
                 .FirstOrDefaultAsync();
 
             if (houseHierarchy != null)
@@ -63,13 +63,13 @@ public class AdressService(GARContext context) : IAdressService
             }
 
             var parentGuid = context.AsAddrObjs.FirstOrDefault(x =>
-                houseHierarchy != null && x.Objectid == houseHierarchy.Parentobjid && x.Isactive == 1)!.Objectguid;
+                houseHierarchy != null && x.Objectid == houseHierarchy.Parentobjid)!.Objectguid;
 
             objectGuid = parentGuid;
         }
 
         var address = context.AsAddrObjs.FirstOrDefault(x =>
-            x.Objectguid == objectGuid && x.Isactive == 1);
+            x.Objectguid == objectGuid);
         
         var searchAddressModel = new SearchAddressModel(
             address?.Objectid,
@@ -95,7 +95,6 @@ public class AdressService(GARContext context) : IAdressService
             from hierarchyItem in hierarchyList
             join address in context.AsAddrObjs
                 on hierarchyItem.Objectid equals address.Objectid
-            where address.Isactive == 1
             select new SearchAddressModel
             {
                 ObjectId = address.Objectid,
@@ -113,7 +112,6 @@ public class AdressService(GARContext context) : IAdressService
             from hierarchyItem in hierarchyList
             join address in context.AsHouses
                 on hierarchyItem.Objectid equals address.Objectid
-            where address.Isactive == 1
             select new SearchAddressModel
             {
                 ObjectId = address.Objectid,
@@ -129,7 +127,7 @@ public class AdressService(GARContext context) : IAdressService
     {
         var result = await (from hierarchy in context.AsAdmHierarchies
                 join address in context.AsAddrObjs on hierarchy.Parentobjid equals address.Objectid
-                where hierarchy.Objectid == objectId && hierarchy.Isactive == 1 && address.Isactive == 1
+                where hierarchy.Objectid == objectId
                 select new { address.Objectid, address.Objectguid, address.Typename, address.Name, address.Level }
             ).FirstOrDefaultAsync();
 

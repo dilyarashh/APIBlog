@@ -73,7 +73,13 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
         return Ok(result);
     }
     
+    [Authorize(Policy = "TokenBlackListPolicy")]
     [HttpGet]
+    [SwaggerOperation(Summary = "Получить список постов")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
     public async Task<IActionResult> GetPostsAsync(
         [FromQuery] string[]? tags,
         [FromQuery] string? author,
