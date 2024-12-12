@@ -40,7 +40,6 @@ builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 builder.Services.AddLogging(builder => builder.AddConsole().AddDebug());
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<IEmailService, EmailService>();
-builder.Services.AddScoped<EmailNotificationJob>();
 
 builder.Services.AddLogging(loggingBuilder =>
 {

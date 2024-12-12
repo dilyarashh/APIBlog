@@ -110,7 +110,6 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
         return Ok();
     }
     
-    [Authorize(Policy = "TokenBlackListPolicy")]
     [HttpGet("{id}/list posts")]
     [SwaggerOperation(Summary = "Получить посты определенного сообщества")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]

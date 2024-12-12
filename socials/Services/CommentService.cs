@@ -184,13 +184,11 @@ public class CommentService(AppDbcontext context, TokenInteractions tokenService
     {
         if (comment == null) return;
 
-        // Загружаем все дочерние комментарии
         comment.SubCommentsList = await context.Comments
             .Where(c => c.ParentId == comment.Id)
-            .Include(c => c.SubCommentsList) // Загружаем подкомментарии
+            .Include(c => c.SubCommentsList) 
             .ToListAsync();
 
-        // Рекурсивно загружаем подкомментарии для каждого дочернего комментария
         foreach (var child in comment.SubCommentsList)
         {
             await LoadAllDescendants(child);
@@ -208,9 +206,9 @@ public class CommentService(AppDbcontext context, TokenInteractions tokenService
     {
         if (comment == null) return;
 
-        AddAncestors(comment, chain); // This now adds the initial comment if it has ancestors
-        AddDescendants(comment, chain); //Add descendants after ancestors to maintain order
-        if (!chain.Comments.Any(c => c.Id == comment.Id)) { // only add if not already present
+        AddAncestors(comment, chain); 
+        AddDescendants(comment, chain); 
+        if (!chain.Comments.Any(c => c.Id == comment.Id)) { 
             chain.Comments.Add(MapToCommentDTO(comment));
         }
     }
@@ -226,7 +224,7 @@ public class CommentService(AppDbcontext context, TokenInteractions tokenService
             return;
 
         visited.Add(comment.Id);
-        chain.Comments.Insert(0, MapToCommentDTO(comment)); // Adding here
+        chain.Comments.Insert(0, MapToCommentDTO(comment)); 
         if (comment.ParentId != null)
         {
             var parent = context.Comments.FirstOrDefault(c => c.Id == comment.ParentId);

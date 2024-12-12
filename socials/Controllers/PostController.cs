@@ -73,7 +73,6 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
         return Ok(result);
     }
     
-    [Authorize(Policy = "TokenBlackListPolicy")]
     [HttpGet]
     [SwaggerOperation(Summary = "Получить список постов")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]
@@ -90,8 +89,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
         [FromQuery] int page = 1,
         [FromQuery] int size = 5)
     {
-        var token = tokenService.GetTokenFromHeader();
-        var posts = await postService.GetPosts(token, tags, author, min, max, sorting, onlyMyCommunities, page, size);
+        var posts = await postService.GetPosts(tags, author, min, max, sorting, onlyMyCommunities, page, size);
         return Ok(posts);
     }
 }

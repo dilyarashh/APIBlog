@@ -10,7 +10,6 @@ public interface IPostService
     Task<bool> AddLikeToPost(Guid postId, Guid userId);
     Task<bool> DeleteLikeFromPost(Guid postId, Guid userId);
     Task<PaginatedList<PostDTO>> GetPosts(
-        string? token,
         string[]? tags,
         string? author,
         int? min,

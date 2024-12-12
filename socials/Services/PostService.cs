@@ -213,7 +213,6 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
     }
     
     public async Task<PaginatedList<PostDTO>> GetPosts(
-            string? token,
             string[]? tags,
             string? author,
             int? min,
@@ -223,9 +222,6 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
             int page = 1,
             int size = 5)
         {
-            var stringUserId = tokenService.GetIdFromToken(token);
-            Guid userId = Guid.Parse(stringUserId);
-            
             if (page <= 0 || size <= 0)
             {
                 throw new BadRequestException("Номер страницы и размер страницы должны быть положительными числами");
@@ -279,8 +275,41 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
                 query = query.Where(p => p.ReadingTime <= max.Value);
             }
 
+            var token = tokenService.GetTokenFromHeader();
+            if (token == null)
+            {
+                query = query.Where(p => p.Community != null && !p.Community.IsClosed); 
+            }
+            else
+            {
+                string stringUserId = tokenService.GetIdFromToken(token);
+                if (string.IsNullOrEmpty(stringUserId))
+                {
+                    throw new UnauthorizedException("");
+                }
+                Guid userId;
+                try
+                {
+                    userId = Guid.Parse(stringUserId);
+                }
+                catch (FormatException)
+                {
+                    throw new UnauthorizedException("");
+                }
+                query = query.Where(p => 
+                        (p.Community != null && !p.Community.IsClosed) ||  
+                        (context.CommunityUsers.Any(cu => cu.UserId == userId && cu.CommunityId == p.CommunityId)) // Communities where the user is a member
+                );
+            }
+            
             if (onlyMyCommunities)
             {
+                if (token == null)
+                {
+                    throw new UnauthorizedException("Пользователь не авторизован");
+                }
+                var stringUserId = tokenService.GetIdFromToken(token);
+                Guid userId = Guid.Parse(stringUserId);
                 var userCommunityIds = await context.CommunityUsers 
                     .Where(uc => uc.UserId == userId)
                     .Select(uc => uc.CommunityId)

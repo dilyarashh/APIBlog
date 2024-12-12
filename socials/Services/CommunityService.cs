@@ -285,6 +285,37 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
         {
             throw new NotFoundException("Такого сообщества не существует");
         }
+
+        if (community.IsClosed)
+        {
+            var token = tokenService.GetTokenFromHeader();
+            if (token == null)
+            {
+                throw new UnauthorizedException("Авторизуйтесь, чтобы смотреть посты закрытого сообщества");
+            }
+            
+            var userIdString = tokenService.GetIdFromToken(token);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                throw new UnauthorizedException("Не удалось получить ID пользователя из токена.");
+            }
+
+            Guid userId;
+            try
+            {
+                userId = Guid.Parse(userIdString);
+            }
+            catch (FormatException)
+            {
+                throw new UnauthorizedException("Неверный формат ID пользователя в токене.");
+            }
+
+            bool isMember = await context.CommunityUsers.AnyAsync(cu => cu.CommunityId == communityId && cu.UserId == userId);
+            if (!isMember)
+            {
+                throw new NotFoundException("Вы не являетесь участником этого сообщества.");
+            }
+        }
         
         if (page <= 0 || size <= 0)
         {
