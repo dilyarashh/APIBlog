@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using socials.DBContext;
 using socials.DBContext.DTO.Community;
 using socials.DBContext.DTO.Post;
@@ -12,7 +13,8 @@ using socials.SupportiveServices.Validations;
 
 namespace socials.Services;
 
-public class CommunityService(AppDbcontext context, TokenInteractions tokenService, GARContext garContext)
+public class CommunityService(AppDbcontext context, TokenInteractions tokenService, GARContext garContext, IEmailService emailService, ISchedulerFactory schedulerFactory,
+    ILogger<PostService> logger)
     : ICommunityService
 {
     public async Task<List<CommunityDTO>> GetCommunityList()
@@ -185,6 +187,34 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
 
         context.Posts.Add(newPost);
         await context.SaveChangesAsync();
+        
+        try
+        {
+            var subscribers = await context.CommunityUsers
+                .Where(cu => cu.CommunityId == communityId)
+                .Select(cu => new { cu.UserId, Email = cu.User.Email })
+                .ToListAsync();
+
+            foreach (var subscriber in subscribers)
+            {
+                try
+                {
+                    await emailService.SendEmailAsync(
+                        subscriber.Email,
+                        "Новый пост!",
+                        $"Новый пост '{newPost.Title}' опубликован в сообществе '{newPost.CommunityName}'");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error sending email to subscriber {Email}", subscriber.Email);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error sending email notifications to subscribers.");
+        }
+        
         return newPost.Id;
     }
     public async Task SubscribeToCommunity(Guid communityId, string? token)

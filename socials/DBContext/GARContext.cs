@@ -7,7 +7,6 @@ public partial class GARContext : DbContext
     public GARContext()
     {
     }
-
     public GARContext(DbContextOptions<GARContext> options)
         : base(options)
     {
