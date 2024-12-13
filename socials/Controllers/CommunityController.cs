@@ -17,6 +17,14 @@ namespace socials.Controllers;
 public class CommunitiesController(ICommunityService communityService, TokenInteractions tokenService)
     : ControllerBase
 {
+    [HttpPost]
+    public async Task<IActionResult> CreateCommunity([FromBody] CreateCommunityDTO communityDTO)
+    {
+        var token = tokenService.GetTokenFromHeader(); 
+        var communityId = await communityService.CreateCommunity(communityDTO, token);
+        return Ok(communityId);
+    }
+    
     [HttpGet("list")]
     [SwaggerOperation(Summary = "Получение списка всех сообществ")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityDTO))]

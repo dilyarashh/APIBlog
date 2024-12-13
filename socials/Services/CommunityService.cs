@@ -17,6 +17,35 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
     ILogger<PostService> logger)
     : ICommunityService
 {
+    public async Task<Guid> CreateCommunity(CreateCommunityDTO communityDTO, string token)
+    {
+        if (string.IsNullOrEmpty(token))
+            throw new UnauthorizedException("Пользователь не авторизован");
+
+        var userId = tokenService.GetIdFromToken(token);
+        
+        var newCommunity = new Community
+        {
+            Id = Guid.NewGuid(),
+            CreateTime = DateTime.UtcNow,
+            Name = communityDTO.Name,
+            Description = communityDTO.Description,
+            IsClosed = communityDTO.IsClosed,
+            SubscribersCount = 1
+        };
+
+        newCommunity.CommunityUsers.Add(new CommunityUser
+        {
+            CommunityId = newCommunity.Id,
+            UserId = Guid.Parse(userId),
+            Role = CommunityRole.Administrator
+        });
+
+        await context.Communities.AddAsync(newCommunity);
+        await context.SaveChangesAsync();
+        return newCommunity.Id;
+    }
+
     public async Task<List<CommunityDTO>> GetCommunityList()
     {
         return await context.Communities 

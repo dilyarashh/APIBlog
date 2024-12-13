@@ -7,6 +7,7 @@ namespace socials.Services.IServices;
 
 public interface ICommunityService
 {
+    Task<Guid> CreateCommunity(CreateCommunityDTO communityDTO, string token);
     Task<List<CommunityDTO>> GetCommunityList();
     Task<List<CommunityUserDTO>> GetUserCommunity(string? token);
     Task<CommunityFullDTO?> GetInformationAboutCommunity(Guid id);
