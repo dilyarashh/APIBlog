@@ -9,18 +9,16 @@ public class EmailQueueProcessor
     private readonly AppDbcontext _context;
     private readonly IEmailService _emailService;
     private readonly ILogger<EmailQueueProcessor> _logger;
-
     public EmailQueueProcessor(AppDbcontext context, IEmailService emailService, ILogger<EmailQueueProcessor> logger)
     {
         _context = context;
         _emailService = emailService;
         _logger = logger;
     }
-
     public async Task ProcessQueueAsync()
     {
         var emailQueueItems = await _context.EmailQueues
-            .Where(eq => !eq.IsDelivered && eq.Retries < 3) 
+            .Where(eq => !eq.IsDelivered) 
             .ToListAsync();
 
         foreach (var item in emailQueueItems)

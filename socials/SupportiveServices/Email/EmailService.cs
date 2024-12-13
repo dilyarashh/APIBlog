@@ -15,7 +15,7 @@ public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
-    private readonly AppDbcontext _context; // Ваш контекст базы данных
+    private readonly AppDbcontext _context; 
 
     public EmailService(IConfiguration configuration, ILogger<EmailService> logger, AppDbcontext context)
     {
