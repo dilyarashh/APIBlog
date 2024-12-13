@@ -8,51 +8,51 @@ using socials.SupportiveServices.Adress;
 namespace socials.Services;
 public class AdressService(GARContext context) : IAdressService
 {
-    public Task<List<SearchAddressModel>> Search(long parentObjectId, string? query)
+    public Task<List<SearchAdressModel>> Search(long parentObjectId, string? query)
     {
         var hierarchyList = context.AsAdmHierarchies
             .Where(x => x.Parentobjid == parentObjectId)
             .AsQueryable();
 
-        var addressList = new List<SearchAddressModel>();
+        var adressList = new List<SearchAdressModel>();
 
         if (!hierarchyList.IsNullOrEmpty())
         {
-            addressList = FindChildInAddrObj(hierarchyList);
+            adressList = FindChildInAddrObj(hierarchyList);
 
-            if (addressList.IsNullOrEmpty())
+            if (adressList.IsNullOrEmpty())
             {
-                addressList = FindChildInHouses(hierarchyList);
+                adressList = FindChildInHouses(hierarchyList);
             }
         }
 
         if (query != null)
         {
-            addressList = addressList
+            adressList = adressList
                 .Where(x => x.Text != null
                             && x.Text.Contains(query, StringComparison.CurrentCultureIgnoreCase))
                 .ToList();
         }
 
-        return Task.FromResult(addressList);
+        return Task.FromResult(adressList);
     }
-    public async Task<List<SearchAddressModel>> Chain(Guid objectGuid)
+    public async Task<List<SearchAdressModel>> Chain(Guid objectGuid)
     {
         var house = context.AsHouses.FirstOrDefault(x =>
             x.Objectguid == objectGuid);
 
-        var addressList = new List<SearchAddressModel>();
+        var adressList = new List<SearchAdressModel>();
 
         if (house != null)
         {
-            var searchHouseModel = new SearchAddressModel(
+            var searchHouseModel = new SearchAdressModel(
                 house.Objectid,
                 house.Objectguid,
                 GetHouseName(house),
                 Level.Building,
-                AddressHelper.GetAddressName(10)
+                AdressHelper.GetAddressName(10)
             );
-            addressList.Add(searchHouseModel);
+            adressList.Add(searchHouseModel);
 
             var houseHierarchy = await context.AsAdmHierarchies
                 .Where(x => x.Objectid == house.Objectid)
@@ -68,62 +68,63 @@ public class AdressService(GARContext context) : IAdressService
             objectGuid = parentGuid;
         }
 
-        var address = context.AsAddrObjs.FirstOrDefault(x =>
+        var adress = context.AsAddrObjs.FirstOrDefault(x =>
             x.Objectguid == objectGuid);
         
-        var searchAddressModel = new SearchAddressModel(
-            address?.Objectid,
-            address!.Objectguid,
-            address.Typename + " " + address.Name,
-            AddressHelper.GetGarAddressLevel(Convert.ToInt32(address.Level)),
-            AddressHelper.GetAddressName(Convert.ToInt32(address.Level))
+        var searchAddressModel = new SearchAdressModel(
+            adress?.Objectid,
+            adress!.Objectguid,
+            adress.Typename + " " + adress.Name,
+            AdressHelper.GetGarAddressLevel(Convert.ToInt32(adress.Level)),
+            AdressHelper.GetAddressName(Convert.ToInt32(adress.Level))
         );
 
         while (searchAddressModel != null)
         {
-            addressList.Add(searchAddressModel);
+            adressList.Add(searchAddressModel);
             searchAddressModel = await FindParentInAddrObjOneObject(searchAddressModel.ObjectId);
         }
 
-        addressList.Reverse();
+        adressList.Reverse();
 
-        return addressList;
+        return adressList;
     }
-    private List<SearchAddressModel> FindChildInAddrObj(IQueryable<Hierarchy> hierarchyList)
+    private List<SearchAdressModel> FindChildInAddrObj(IQueryable<Hierarchy> hierarchyList)
     {
-        var addressQuery =
+        var adressQuery =
             from hierarchyItem in hierarchyList
-            join address in context.AsAddrObjs
-                on hierarchyItem.Objectid equals address.Objectid
-            select new SearchAddressModel
+            join adress in context.AsAddrObjs
+                on hierarchyItem.Objectid equals adress.Objectid
+            select new SearchAdressModel
             {
-                ObjectId = address.Objectid,
-                ObjectGuid = address.Objectguid,
-                Text = $"{address.Typename} {address.Name}",
-                ObjectLevel = AddressHelper.GetGarAddressLevel(Convert.ToInt32(address.Level)),
-                ObjectLevelText = AddressHelper.GetAddressName(Convert.ToInt32(address.Level))
+                ObjectId = adress.Objectid,
+                ObjectGuid = adress.Objectguid,
+                Text = $"{adress.Typename} {adress.Name}",
+                ObjectLevel = AdressHelper.GetGarAddressLevel(Convert.ToInt32(adress.Level)),
+                ObjectLevelText = AdressHelper.GetAddressName(Convert.ToInt32(adress.Level))
             };
 
-        return addressQuery.ToList();
+        return adressQuery.ToList();
     }
-    private List<SearchAddressModel> FindChildInHouses(IQueryable<Hierarchy> hierarchyList)
+    private List<SearchAdressModel> FindChildInHouses(IQueryable<Hierarchy> hierarchyList)
     {
         var addressQuery =
             from hierarchyItem in hierarchyList
             join address in context.AsHouses
                 on hierarchyItem.Objectid equals address.Objectid
-            select new SearchAddressModel
+            select new SearchAdressModel
             {
                 ObjectId = address.Objectid,
                 ObjectGuid = address.Objectguid,
                 Text = GetHouseName(address),
                 ObjectLevel = Level.Building,
-                ObjectLevelText = AddressHelper.GetAddressName(10)
+                ObjectLevelText = AdressHelper.GetAddressName(10)
             };
-        
+    
         return addressQuery.ToList();
     }
-    private async Task<SearchAddressModel?> FindParentInAddrObjOneObject(long? objectId)
+
+    private async Task<SearchAdressModel?> FindParentInAddrObjOneObject(long? objectId)
     {
         var result = await (from hierarchy in context.AsAdmHierarchies
                 join address in context.AsAddrObjs on hierarchy.Parentobjid equals address.Objectid
@@ -136,16 +137,17 @@ public class AdressService(GARContext context) : IAdressService
             return null;
         }
 
-        return new SearchAddressModel(
+        return new SearchAdressModel(
             result.Objectid,
             result.Objectguid,
             result.Typename + " " + result.Name,
-            AddressHelper.GetGarAddressLevel(Convert.ToInt32(result.Level)),
-            AddressHelper.GetAddressName(Convert.ToInt32(result.Level))
+            AdressHelper.GetGarAddressLevel(Convert.ToInt32(result.Level)),
+            AdressHelper.GetAddressName(Convert.ToInt32(result.Level))
         );
     }
+
     private static string GetHouseName(House house)
     {
-        return $"{house.Housenum} {(house.Addtype1.HasValue ? $"{AddressHelper.GetHouseType(house.Addtype1)} {house.Addnum1 ?? ""}" : "")} {(house.Addtype2.HasValue ? $"{AddressHelper.GetHouseType(house.Addtype2)} {house.Addnum2 ?? ""}" : "")}".Trim();
+        return $"{house.Housenum} {(house.Addtype1.HasValue ? $"{AdressHelper.GetHouseType(house.Addtype1)} {house.Addnum1 ?? ""}" : "")} {(house.Addtype2.HasValue ? $"{AdressHelper.GetHouseType(house.Addtype2)} {house.Addnum2 ?? ""}" : "")}".Trim();
     }
 }

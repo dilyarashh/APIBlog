@@ -24,7 +24,6 @@ public class TokenInteractions
         _httpContextAccessor = httpContextAccessor;
         _tokenHandler = new JwtSecurityTokenHandler();
     }
-
     public string GenerateToken(User user)
     {
         var claims = new List<Claim>

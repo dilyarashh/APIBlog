@@ -141,7 +141,7 @@ public class CommentService(AppDbcontext context, TokenInteractions tokenService
 
         if (comment.AuthorId != Guid.Parse(userId))
         {
-            throw new UnauthorizedException("У вас нет прав для удаления этого комментария.");
+            throw new BadRequestException("У вас нет прав для удаления этого комментария.");
         }
         
         var parentComment = await context.Comments.FindAsync(comment.ParentId);

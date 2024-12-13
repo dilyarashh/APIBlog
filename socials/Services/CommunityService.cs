@@ -202,7 +202,10 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
                     await emailService.SendEmailAsync(
                         subscriber.Email,
                         "Новый пост!",
-                        $"Новый пост '{newPost.Title}' опубликован в сообществе '{newPost.CommunityName}'");
+                        $"Новый пост '{newPost.Title}' опубликован в сообществе '{newPost.CommunityName}'.",
+                        newPost.Id, 
+                        subscriber.UserId  
+                    );
                 }
                 catch (Exception ex)
                 {
@@ -214,7 +217,6 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
         {
             logger.LogError(ex, "Error sending email notifications to subscribers.");
         }
-        
         return newPost.Id;
     }
     public async Task SubscribeToCommunity(Guid communityId, string? token)

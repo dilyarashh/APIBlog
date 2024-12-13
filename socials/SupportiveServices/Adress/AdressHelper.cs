@@ -1,7 +1,7 @@
 using socials.DBContext.Models.GAR;
 
 namespace socials.SupportiveServices.Adress;
-public static class AddressHelper
+public static class AdressHelper
 {
     private static readonly Dictionary<int, Level> LevelMappings = new Dictionary<int, Level>
     {

@@ -11,12 +11,12 @@ public class AppDbcontext(DbContextOptions<AppDbcontext> options) : DbContext(op
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Community> Communities { get; set; }
     public DbSet<CommunityUser> CommunityUsers { get; set; }
-    
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Post> Posts { get; set; } 
     
     public DbSet<PostTags> PostTags { get; set; }
     public DbSet<PostLike> PostLikes { get; set; }
+    public DbSet<EmailQueues> EmailQueues { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -184,25 +184,25 @@ public class AppDbcontext(DbContextOptions<AppDbcontext> options) : DbContext(op
             new CommunityUser
             {
                 CommunityId = Guid.Parse("a1b2c3d4-e5f6-0000-1234-567890abcdef"),
-                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
+                UserId = Guid.Parse("e71da460-f06b-406f-800a-d18712fa9edd"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e9d8c7-b6a5-1111-9876-543210fedcba"),
-                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
+                UserId = Guid.Parse("e71da460-f06b-406f-800a-d18712fa9edd"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e6d8c9-b6a5-2222-9876-543110fedcba"),
-                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
+                UserId = Guid.Parse("e71da460-f06b-406f-800a-d18712fa9edd"), 
                 Role = CommunityRole.Administrator
             },
             new CommunityUser
             {
                 CommunityId = Guid.Parse("f0e6d8c9-b6a5-3333-9876-543110fedcba"),
-                UserId = Guid.Parse("c5c44d4f-b9a5-4c79-ad5c-92eb263d461e"), 
+                UserId = Guid.Parse("e71da460-f06b-406f-800a-d18712fa9edd"),
                 Role = CommunityRole.Administrator
             }
         );

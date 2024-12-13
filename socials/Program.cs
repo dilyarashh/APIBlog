@@ -1,28 +1,16 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Quartz;
-using Quartz.Core;
 using Quartz.Impl;
+using Quartz.Spi;
 using socials.DBContext;
 using socials.Services;
 using socials.Services.IServices;
 using socials.SupportiveServices.Exceptions;
 using socials.SupportiveServices.Password;
 using socials.SupportiveServices.Token;
-using Quartz;
-using Quartz.Impl; // Возможно потребуется, если вы используете StdSchedulerFactory
-using Microsoft.Extensions.Hosting;
-using Quartz;
-using Microsoft.Extensions.DependencyInjection;
-using socials.Services;
-using Quartz;
-using Quartz.Impl;
-using Microsoft.Extensions.DependencyInjection;
-using socials.Services; 
+using QuartzHostedService = socials.Services.QuartzHostedService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -39,7 +27,18 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 builder.Services.AddLogging(builder => builder.AddConsole().AddDebug());
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddScoped<EmailQueueProcessor>();
+builder.Services.AddScoped<EmailQueueProcessingJob>();
+
+builder.Services.AddSingleton<IJobFactory, JobFactory>(); 
+builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+builder.Services.AddScoped<ExpiredTokenRemovalJob>(); 
+builder.Services.AddSingleton(new JobSchedule(
+    jobType: typeof(ExpiredTokenRemovalJob),
+    cronExpression: "0 0 * * *")); 
+builder.Services.AddHostedService<QuartzHostedService>();
 
 builder.Services.AddLogging(loggingBuilder =>
 {
@@ -112,7 +111,9 @@ try
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<AppDbcontext>();
+    var garContext = services.GetRequiredService<GARContext>();
     await dbContext.Database.MigrateAsync();
+    await garContext.Database.MigrateAsync();
 }
 catch (Exception ex)
 {

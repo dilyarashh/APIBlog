@@ -1,13 +1,13 @@
 namespace socials.DBContext.Models.GAR;
-public class SearchAddressModel
+public class SearchAdressModel
 {
     public long? ObjectId { get; set; }
     public Guid ObjectGuid { get; set; }
     public string? Text { get; set; }
     public Level? ObjectLevel { get; set; }
     public string? ObjectLevelText { get; set; }
-    public SearchAddressModel() {}
-    public SearchAddressModel(long? objectId, Guid objectGuid, String text, Level objectLevel,
+    public SearchAdressModel() {}
+    public SearchAdressModel(long? objectId, Guid objectGuid, string text, Level objectLevel,
         string objectLevelText)
     {
         ObjectId = objectId;

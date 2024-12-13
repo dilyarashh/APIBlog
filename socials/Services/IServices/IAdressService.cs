@@ -5,6 +5,6 @@ namespace socials.Services.IServices;
 
 public interface IAdressService
 {
-    Task<List<SearchAddressModel>> Search(long parentObjectId, string? query);
-    Task<List<SearchAddressModel>> Chain(Guid objectGuid);
+    Task<List<SearchAdressModel>> Search(long parentObjectId, string? query);
+    Task<List<SearchAdressModel>> Chain(Guid objectGuid);
 }

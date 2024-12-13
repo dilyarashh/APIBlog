@@ -202,7 +202,7 @@ public class UserService(AppDbcontext dbcontext, TokenInteractions tokenService,
 
         if (Guid.TryParse(id, out Guid userId) && userId != Guid.Empty)
         {
-            await dbcontext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token });
+            await dbcontext.BlackTokens.AddAsync(new BlackToken { Blacktoken = token, CreatedAt = DateTime.UtcNow });
             await dbcontext.SaveChangesAsync();
         }
         else

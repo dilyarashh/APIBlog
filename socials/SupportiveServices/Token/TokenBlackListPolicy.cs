@@ -9,12 +9,12 @@ namespace socials.SupportiveServices.Token;
 public class TokenBlackListPolicy : AuthorizationHandler<TokenBlackListRequirment>
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration; // Add IConfiguration
+    private readonly IConfiguration _configuration; 
 
-    public TokenBlackListPolicy(IServiceProvider serviceProvider, IConfiguration configuration) // Add IConfiguration
+    public TokenBlackListPolicy(IServiceProvider serviceProvider, IConfiguration configuration) 
     {
         _serviceProvider = serviceProvider;
-        _configuration = configuration; // Initialize IConfiguration
+        _configuration = configuration; 
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TokenBlackListRequirment requirement)
@@ -42,13 +42,12 @@ public class TokenBlackListPolicy : AuthorizationHandler<TokenBlackListRequirmen
                         ValidateLifetime = true,
                         ValidIssuer = _configuration["AppSettings:Issuer"],
                         ValidAudience = _configuration["AppSettings:Audience"],
-                        ClockSkew = TimeSpan.Zero // Prevent time-based attacks
+                        ClockSkew = TimeSpan.Zero 
                     };
 
                     tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-                    // Token is valid; check blacklist
-                    var blackToken = await appDbContext.BlackTokens.FirstOrDefaultAsync(b => b.Blacktoken == token); // Use async method
+                    var blackToken = await appDbContext.BlackTokens.FirstOrDefaultAsync(b => b.Blacktoken == token); 
                     if (blackToken != null)
                     {
                         context.Fail();
@@ -60,16 +59,15 @@ public class TokenBlackListPolicy : AuthorizationHandler<TokenBlackListRequirmen
                 }
                 catch (SecurityTokenExpiredException)
                 {
-                    context.Fail(); // Handle expired tokens
+                    context.Fail(); 
                 }
                 catch (SecurityTokenException)
                 {
-                    context.Fail(); // Handle invalid tokens
+                    context.Fail(); 
                 }
                 catch (Exception ex)
                 {
-                    context.Fail(); // Handle other exceptions appropriately
-                    // Log the exception
+                    context.Fail(); 
                 }
             }
             else
