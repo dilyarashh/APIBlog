@@ -27,11 +27,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 builder.Services.AddLogging(builder => builder.AddConsole().AddDebug());
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddScoped<IEmailService, EmailService>();
 
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailQueueProcessor>();
 builder.Services.AddScoped<EmailQueueProcessingJob>();
-
 builder.Services.AddSingleton<IJobFactory, JobFactory>(); 
 builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 builder.Services.AddScoped<ExpiredTokenRemovalJob>(); 
@@ -92,7 +91,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<TokenInteractions>();
 builder.Services.AddSingleton<IAuthorizationHandler, TokenBlackListPolicy>();
 builder.Services.AddScoped<ITagService, TagService>();
@@ -111,9 +109,7 @@ try
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<AppDbcontext>();
-    var garContext = services.GetRequiredService<GARContext>();
     await dbContext.Database.MigrateAsync();
-    await garContext.Database.MigrateAsync();
 }
 catch (Exception ex)
 {
@@ -131,5 +127,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization(); 
 app.MapControllers();
-//app.UseMiddleware<Middleware>();
+app.UseMiddleware<Middleware>();
 app.Run();

@@ -4,7 +4,6 @@ using socials.DBContext.Models;
 using socials.DBContext.Models.Enums;
 
 namespace socials.Services.IServices;
-
 public interface ICommunityService
 {
     Task<Guid> CreateCommunity(CreateCommunityDTO communityDTO, string token);

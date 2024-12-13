@@ -7,12 +7,6 @@ public class BadRequestException : Exception
     {
     }
 }
-public class InternalServerErrorException : Exception
-{
-    public InternalServerErrorException(string message) : base(message)
-    {
-    }
-}
 public class UnauthorizedException : Exception
 {
     public UnauthorizedException(string message) : base(message)

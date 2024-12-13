@@ -1,7 +1,6 @@
 using socials.DBContext.Models.Enums;
 
 namespace socials.DBContext.DTO.Author;
-
 public class AuthorDTO
 {
     public string Name { get; set; }

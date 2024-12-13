@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using socials.DBContext.DTO.Community;
 using socials.DBContext.DTO.Post;
 using socials.DBContext.Models;
 using socials.DBContext.Models.Enums;
 using socials.Services.IServices;
-using socials.SupportiveServices.Exceptions;
 using socials.SupportiveServices.Token;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,7 +15,12 @@ namespace socials.Controllers;
 public class CommunitiesController(ICommunityService communityService, TokenInteractions tokenService)
     : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("create_community")]
+    [SwaggerOperation(Summary = "Создать сообщество")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Сообщество создано", typeof(Guid))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> CreateCommunity([FromBody] CreateCommunityDTO communityDTO)
     {
         var token = tokenService.GetTokenFromHeader(); 
@@ -28,7 +31,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [HttpGet("list")]
     [SwaggerOperation(Summary = "Получение списка всех сообществ")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityDTO))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetCommunityList()
     {
         var communities = await communityService.GetCommunityList();
@@ -40,7 +43,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerOperation(Summary = "Получение сообществ авторизованного пользователя")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityUserDTO))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetUserCommunity()
     {
         var token = tokenService.GetTokenFromHeader(); 
@@ -52,7 +55,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerOperation(Summary = "Получение информации о конкретном сообществе")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityFullDTO))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Сообщество не найдено")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetCommunity(Guid id)
     {
         var community = await communityService.GetInformationAboutCommunity(id);
@@ -65,7 +68,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(CommunityRole))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Сообщество не найдено")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetUserRoleInCommunity(Guid communityId)
     {
         var token = tokenService.GetTokenFromHeader();
@@ -80,7 +83,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибки валидации", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> CreatePost(Guid communityId, [FromBody] CreatePostDTO post) 
     {
         var token = tokenService.GetTokenFromHeader();
@@ -95,7 +98,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Пользователь уже подписан на сообщество", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> SubscribeToCommunity(Guid communityId) 
     {
         var token = tokenService.GetTokenFromHeader(); 
@@ -110,7 +113,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Пользователь не был подписан на сообщество", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> UnsubscribeFromCommunity(Guid communityId) 
     {
         var token = tokenService.GetTokenFromHeader(); 
@@ -123,7 +126,7 @@ public class CommunitiesController(ICommunityService communityService, TokenInte
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetCommunityPostsAsync(
         [FromRoute] Guid id, 
         [FromQuery] string[]? tags,

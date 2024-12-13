@@ -298,7 +298,7 @@ public class PostService(AppDbcontext context, TokenInteractions tokenService, G
                 }
                 query = query.Where(p => 
                         (p.Community != null && !p.Community.IsClosed) ||  
-                        (context.CommunityUsers.Any(cu => cu.UserId == userId && cu.CommunityId == p.CommunityId)) // Communities where the user is a member
+                        (context.CommunityUsers.Any(cu => cu.UserId == userId && cu.CommunityId == p.CommunityId)) 
                 );
             }
             

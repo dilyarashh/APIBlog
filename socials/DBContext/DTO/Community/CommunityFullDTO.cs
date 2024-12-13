@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using socials.DBContext.DTO.User;
 
 namespace socials.DBContext.DTO.Community;
-
 public class CommunityFullDTO
 {
     [Required]

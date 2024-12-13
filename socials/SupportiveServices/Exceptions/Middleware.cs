@@ -43,11 +43,6 @@ namespace socials.SupportiveServices.Exceptions;
                 statusCode = (int)HttpStatusCode.Unauthorized;
                 message = !string.IsNullOrEmpty(exception.Message) ? exception.Message : "Данный пользователь не авторизован";
             }
-            else if (exception is InternalServerErrorException)
-            {
-                statusCode = (int)HttpStatusCode.InternalServerError;
-                message = !string.IsNullOrEmpty(exception.Message) ? exception.Message : "Внутренняя ошибка сервера";
-            }
             else if (exception is NotFoundException)
             {
                 statusCode = (int)HttpStatusCode.NotFound;

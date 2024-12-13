@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using socials.DBContext.Models.Enums;
 
 namespace socials.DBContext.Models;
-
 public class User
 {
     [Required]
@@ -23,7 +22,6 @@ public class User
     public string Email { get; set; }
     
     public virtual ICollection<CommunityUser> Communities { get; set; } = new HashSet<CommunityUser>();
-    
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     
 }

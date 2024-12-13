@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace socials.DBContext.DTO.Comment;
-
 public class CreateCommentDTO
 {
     [Required]

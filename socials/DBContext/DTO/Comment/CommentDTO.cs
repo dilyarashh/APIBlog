@@ -1,5 +1,4 @@
 namespace socials.DBContext.DTO.Comment;
-
 public class CommentDTO
 {
     public Guid Id { get; set; }

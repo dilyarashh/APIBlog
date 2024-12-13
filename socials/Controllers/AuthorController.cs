@@ -8,13 +8,12 @@ namespace socials.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class AuthorsController(IAuthorService authorService) : ControllerBase
 {
     [HttpGet]
     [SwaggerOperation(Summary = "Получение списка авторов")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(AuthorDTO))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetAllAuthors()
     {
         var authors = await authorService.GetAllAuthors();

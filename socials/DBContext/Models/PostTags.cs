@@ -1,8 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace socials.DBContext.Models;
-
 public class PostTags
 {
     public Guid PostId { get; set; }

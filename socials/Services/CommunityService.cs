@@ -13,7 +13,7 @@ using socials.SupportiveServices.Validations;
 
 namespace socials.Services;
 
-public class CommunityService(AppDbcontext context, TokenInteractions tokenService, GARContext garContext, IEmailService emailService, ISchedulerFactory schedulerFactory,
+public class CommunityService(AppDbcontext context, TokenInteractions tokenService, GARContext garContext, IEmailService emailService, 
     ILogger<PostService> logger)
     : ICommunityService
 {
@@ -22,6 +22,16 @@ public class CommunityService(AppDbcontext context, TokenInteractions tokenServi
         if (string.IsNullOrEmpty(token))
             throw new UnauthorizedException("Пользователь не авторизован");
 
+        if(!GroupNameValidator.ValidateName(communityDTO.Name))
+        {
+            throw new BadRequestException("Длина названия группы должна быть от 1 до 50 символов");
+        }
+        
+        if(!GroupDescriptionValidator.ValidateDescription(communityDTO.Description))
+        {
+            throw new BadRequestException("Длина описания должна быть от 1 до 300 символов");
+        }
+        
         var userId = tokenService.GetIdFromToken(token);
         
         var newCommunity = new Community

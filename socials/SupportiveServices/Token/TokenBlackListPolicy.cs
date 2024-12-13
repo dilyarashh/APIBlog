@@ -32,7 +32,7 @@ public class TokenBlackListPolicy : AuthorizationHandler<TokenBlackListRequirmen
                 var tokenHandler = new JwtSecurityTokenHandler();
                 try
                 {
-                    var secretKey = Encoding.UTF8.GetBytes(_configuration["AppSettings:Secret"]); // Get secret key from configuration
+                    var secretKey = Encoding.UTF8.GetBytes(_configuration["AppSettings:Secret"]); 
                     var validationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,

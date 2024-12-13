@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace socials.DBContext.DTO.User;
-
 public class LoginDTO
 {
     [Required]

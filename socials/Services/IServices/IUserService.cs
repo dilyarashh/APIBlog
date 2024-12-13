@@ -1,9 +1,6 @@
 using socials.DBContext.DTO.User;
-using socials.DBContext.Models;
 
 namespace socials.Services.IServices;
-
-
 public interface IUserService
 {
     public Task<TokenDTO> Register(RegistrationDTO registrationDto);

@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace socials.DBContext.Models;
-
 public class Tag
 {
     public Guid Id { get; set; }

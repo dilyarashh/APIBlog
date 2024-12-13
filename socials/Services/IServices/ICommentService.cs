@@ -1,8 +1,6 @@
 using socials.DBContext.DTO.Comment;
-using socials.DBContext.Models;
 
 namespace socials.Services.IServices;
-
 public interface ICommentService
 {
     Task<CommentDTO> AddComment(Guid postId, CreateCommentDTO createCommentDto, string token);

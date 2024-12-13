@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace socials.DBContext.DTO.Post;
-
 public class CreatePostDTO
 {
     [Required]

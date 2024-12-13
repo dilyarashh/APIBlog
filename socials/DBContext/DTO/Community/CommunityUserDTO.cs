@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using socials.DBContext.Models.Enums;
 
 namespace socials.DBContext.DTO.Community;
-
 public class CommunityUserDTO
 {
     [Required]

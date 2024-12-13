@@ -207,7 +207,7 @@ public class UserService(AppDbcontext dbcontext, TokenInteractions tokenService,
         }
         else
         {
-            throw new InternalServerErrorException("Не удалось осуществить выход");
+            throw new UnauthorizedException("Не удалось осуществить выход");
         }
     }
 }

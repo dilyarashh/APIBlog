@@ -1,9 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using socials.DBContext.Models.Enums;
 
 namespace socials.DBContext.Models;
-
 public class CommunityUser
 {
     public Guid CommunityId { get; set; }

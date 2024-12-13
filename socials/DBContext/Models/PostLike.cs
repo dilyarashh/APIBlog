@@ -1,5 +1,4 @@
 namespace socials.DBContext.Models;
-
 public class PostLike
 {
     public Guid UserId { get; set; }

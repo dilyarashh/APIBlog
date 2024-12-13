@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using socials.DBContext.DTO.Post;
@@ -22,7 +21,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибки валидации", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO post) 
     {
         var token = tokenService.GetTokenFromHeader();
@@ -36,7 +35,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(PostDTO))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetPostById(Guid id)
     {
         var postDto = await postService.GetPostById(id);
@@ -49,7 +48,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
     [SwaggerResponse(StatusCodes.Status200OK, "Лайк поставлен")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> AddLikeToPost(Guid postId)
     {
         var token = tokenService.GetTokenFromHeader();
@@ -64,7 +63,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
     [SwaggerResponse(StatusCodes.Status200OK, "Лайк поставлен")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> DeleteLikeToPost(Guid postId)
     {
         var token = tokenService.GetTokenFromHeader();
@@ -78,7 +77,7 @@ public class PostsController(IPostService postService, TokenInteractions tokenSe
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(Guid))]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetPostsAsync(
         [FromQuery] string[]? tags,
         [FromQuery] string? author,

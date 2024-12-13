@@ -13,7 +13,7 @@ public class TagController(ITagService tagService) : ControllerBase
     [HttpGet]
     [SwaggerOperation(Summary = "Просмотр списка тегов")]
     [SwaggerResponse(StatusCodes.Status200OK, "Список получен", typeof(TagDTO))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetTags()
     {
         var tags = await tagService.GetTags();

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace socials.DBContext.Models;
-
 public sealed class Community
 {
     [Required]

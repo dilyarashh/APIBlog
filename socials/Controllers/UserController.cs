@@ -16,7 +16,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerOperation(Summary = "Авторизация пользователя")]
     [SwaggerResponse(StatusCodes.Status200OK, "Успешная авторизация", typeof(TokenDTO))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибка авторизации", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
     {
         var tokenResponse = await userService.Login(loginDto);
@@ -27,7 +27,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerOperation(Summary = "Регистрация нового пользователя")]
     [SwaggerResponse(StatusCodes.Status200OK, "Успешная регистрация", typeof(TokenDTO))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибки валидации", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> Register([FromBody] RegistrationDTO registrationDto)
     {
 
@@ -40,7 +40,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerOperation(Summary = "Получение профиля авторизованного пользователя")]
     [SwaggerResponse(StatusCodes.Status200OK, "Данные получены", typeof(UserDTO))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> GetProfile()
     {
         var token = tokenService.GetTokenFromHeader();
@@ -53,7 +53,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerResponse(StatusCodes.Status200OK, "Данные изменены")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Ошибки валидации", typeof(Error))]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> EditProfile([FromBody] EditDTO editDto)
     {
         var token = tokenService.GetTokenFromHeader();
@@ -66,7 +66,7 @@ public class UserController(IUserService userService, TokenInteractions tokenSer
     [SwaggerOperation(Summary = "Выход из профиля")]
     [SwaggerResponse(StatusCodes.Status200OK, "Выход осуществлен")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "Пользователь не авторизован", typeof(Error))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера", typeof(Error))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Ошибка сервера")]
     public async Task<IActionResult> Logout()
     {
         var token = tokenService.GetTokenFromHeader();
